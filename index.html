@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loki Wang | Creative Director</title>
+
+  <!-- 1. 引入 Tailwind CSS 样式 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config = { darkMode: 'class' }</script>
+
+  <!-- 2. 引入 React 核心库 -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+
+  <!-- 3. 引入 Babel (用于在浏览器中实时编译 JSX) -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- 4. 引入 Firebase V8 云端数据库 (无需 npm 安装) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+</head>
+
+<!-- 网页底色与默认字体颜色 -->
+<body class="bg-[#f7f7f5] dark:bg-[#0a0a0a] text-[#111] dark:text-[#f7f7f5] selection:bg-[#111] dark:selection:bg-white selection:text-white dark:selection:text-black font-sans overflow-x-hidden transition-colors duration-700 ease-in-out">
+  
+  <div id="root"></div>
+
+  <!-- ========================================== -->
+  <!-- 核心程序代码 (JSX) -->
+  <!-- ========================================== -->
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // --- Firebase 配置区 ---
+    // (如果你后续注册了 Firebase，把你的配置填在下面即可永久保存数据。现在留空会使用本地测试模式)
+    const firebaseConfig = {
+      apiKey: "", 
+      authDomain: "", 
+      projectId: ""
+    };
+
+    let db = null;
+    let auth = null;
+    try {
+      if (firebaseConfig.apiKey) {
+        if (!firebase.apps.length) {
+          firebase.initializeApp(firebaseConfig);
+        }
+        db = firebase.firestore();
+        auth = firebase.auth();
+      }
+    } catch(e) {
+      console.warn("Firebase 未配置，使用本地模式");
+    }
+
+    // --- 内置原生 SVG 图标 (彻底告别第三方报错) ---
+    const ArrowUpRight = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>;
+    const X = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>;
+    const Moon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>;
+    const Sun = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>;
+    const ArrowUp = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 7-7 7 7M12 19V5"/></svg>;
+    const Lock = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>;
+    const Plus = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5v14"/></svg>;
+    const ArrowLeft = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 19-7-7 7-7M19 12H5"/></svg>;
+    const Trash2 = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2M10 11v6M14 11v6"/></svg>;
+
+    // --- 数据定义 ---
+    const CATEGORIES = ["All", "带领团队", "TVC与宣言", "主视觉与海报", "AIGC作品", "包装设计", "VI与IP陈列"];
+
+    const placeholder1 = "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?q=80&w=2000&auto=format&fit=crop"; 
+    const placeholder2 = "https://images.unsplash.com/photo-1542314831-c6a4d1424b15?q=80&w=1600&auto=format&fit=crop"; 
+    const placeholder3 = "https://images.unsplash.com/photo-1618172193622-ae2d025f4032?q=80&w=1600&auto=format&fit=crop"; 
+    const placeholder16x9 = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1600&h=900&fit=crop";
+
+    const HERO_PROJECTS = [
+      { id: 'h1', title: "Mustang 虎虎生威", category: "主视觉与海报", client: "Ford", image: placeholder1 },
+      { id: 'h2', title: "天灯的祝福", category: "整合营销", client: "Banyan Tree", image: placeholder2 },
+      { id: 'h3', title: "洛奇的密室", category: "AIGC 概念视觉", client: "Loki's Room", image: placeholder3 },
+    ];
+
+    const INITIAL_PROJECTS = [
+      { id: 1, title: "天灯的祝福 / 整合营销", category: "带领团队", client: "Banyan Tree 悦榕酒店" },
+      { id: 2, title: "不将就是我们的讲究 TVC", category: "带领团队", client: "Ecowater 怡口净水" },
+      { id: 3, title: "618 裸眼3D空降美罗城", category: "带领团队", client: "Weber 威焙" },
+      { id: 4, title: "东风日产金融 全年案 / 通勤套装", category: "带领团队", client: "DNAF" },
+      { id: 5, title: "创造合适 / Mustang 虎虎生威", category: "带领团队", client: "Ford 福特" },
+      { id: 6, title: "小黑裙 自信转身", category: "带领团队", client: "AVON 雅芳" },
+      { id: 7, title: "Marykay x 木兰 新品上市", category: "带领团队", client: "Mary Kay 玫琳凯" },
+      { id: 8, title: "羽西 x 太空创想 跨界整合", category: "带领团队", client: "YUESAI 羽西" },
+      { id: 9, title: "新风至·轻云享", category: "带领团队", client: "PHILIPS 飞利浦空调" },
+      { id: 10, title: "不妥协 更热爱 TVC", category: "带领团队", client: "HIZERO" },
+      { id: 11, title: "Motorcraft 60周年宣言", category: "TVC与宣言", client: "Ford 福特" },
+      { id: 12, title: "光启计划 / 山区点灯", category: "TVC与宣言", client: "中国电信" },
+      { id: 13, title: "IKEA x 中国电信 定制未来家", category: "TVC与宣言", client: "IKEA & 中国电信" },
+      { id: 14, title: "帝王系列 / 净活系列洗衣机", category: "TVC与宣言", client: "Whirlpool 惠而浦" },
+      { id: 15, title: "猛禽计划", category: "主视觉与海报", client: "Ford 福特" },
+      { id: 16, title: "魔洁 M85 龙卷魔力", category: "主视觉与海报", client: "LEXY 莱克" },
+      { id: 17, title: "宴遇中国 (中秋/重阳/百味)", category: "主视觉与海报", client: "SNOW 雪花啤酒" },
+      { id: 18, title: "QX90 破界而生", category: "主视觉与海报", client: "INFINITI 英菲尼迪" },
+      { id: 19, title: "2025 答案之瓶", category: "主视觉与海报", client: "Budweiser 百威" },
+      { id: 20, title: "拜年礼物测一测 / 浓醇时光", category: "主视觉与海报", client: "HERSHEY'S 好时" },
+      { id: 21, title: "为自己打气", category: "主视觉与海报", client: "统一企业" },
+      { id: 22, title: "小金瓶 / 法式护肤", category: "主视觉与海报", client: "NUXE 巴黎欧树" },
+      { id: 23, title: "扫清过敏障碍", category: "主视觉与海报", client: "Clarityne 开瑞坦" },
+      { id: 24, title: "每日续养", category: "主视觉与海报", client: "Centrum 善存" },
+      { id: 25, title: "每一滴的优悦", category: "主视觉与海报", client: "优悦" },
+      { id: 26, title: "极致奢宠之礼", category: "主视觉与海报", client: "Shanghai Vive 双妹" },
+      { id: 27, title: "新素质女生", category: "主视觉与海报", client: "KAGOME 可果美" },
+      { id: 28, title: "Forever Chuck", category: "主视觉与海报", client: "CONVERSE" },
+      { id: 29, title: "品牌视觉大片", category: "主视觉与海报", client: "FLORASIS 花西子" },
+      { id: 30, title: "产品概念视觉", category: "主视觉与海报", client: "Ninebot 九号" },
+      { id: 31, title: "Ultimate Design 视觉探索", category: "主视觉与海报", client: "HUAWEI 华为" },
+      { id: 32, title: "马上有钱 / 马上有财 字体设计", category: "主视觉与海报", client: "Bilibili" },
+      { id: 33, title: "N°5 香水视觉", category: "主视觉与海报", client: "CHANEL" },
+      { id: 34, title: "像素谜案解说", category: "AIGC作品", client: "洛奇的密室" },
+      { id: 35, title: "拥尸入梦/华裔灭门/致命独白", category: "AIGC作品", client: "洛奇的密室" },
+      { id: 36, title: "Cat & Diamond / Rain & Sheep", category: "AIGC作品", client: "LOKIJIE 锦钰" },
+      { id: 37, title: "水果丛林 / 概念视觉探索", category: "AIGC作品", client: "LOKIJIE 锦钰" },
+      { id: 38, title: "羽西 x 太空创想 联名礼盒", category: "包装设计", client: "YUESAI 羽西" },
+      { id: 39, title: "生命之书 礼盒", category: "包装设计", client: "Boston Scientific 波士顿科学" },
+      { id: 40, title: "Very Rose 护肤礼盒", category: "包装设计", client: "NUXE 巴黎欧树" },
+      { id: 41, title: "Beauty Clinic / Repair Up", category: "包装设计", client: "Avène 雅漾" },
+      { id: 42, title: "颂春丰 茶叶礼盒", category: "包装设计", client: "中茶" },
+      { id: 43, title: "香氛洗护包装", category: "包装设计", client: "PANIER DES SENS" },
+      { id: 44, title: "Form Follows Perfection", category: "包装设计", client: "AXOR" },
+      { id: 45, title: "手表定制礼盒", category: "包装设计", client: "PIERRE LANNIER" },
+      { id: 46, title: "沙琪玛 年货礼盒", category: "包装设计", client: "徐记" },
+      { id: 47, title: "旋转机关礼盒", category: "包装设计", client: "KitKat 雀巢" },
+      { id: 48, title: "健能酸奶 (每天润润肺)", category: "包装设计", client: "光明" },
+      { id: 49, title: "创新之路 Journey 陈列", category: "VI与IP陈列", client: "HSBC 汇丰" },
+      { id: 50, title: "领航员阿东/阿金 IP设计", category: "VI与IP陈列", client: "DNAF" },
+      { id: 51, title: "立顿 x LINE FRIENDS", category: "VI与IP陈列", client: "Lipton 立顿" },
+      { id: 52, title: "不敢出走 线下陈列", category: "VI与IP陈列", client: "DOUBLEMINT 绿箭" },
+      { id: 53, title: "库尔勒香梨 体验馆设计", category: "VI与IP陈列", client: "品牌方" },
+      { id: 54, title: "迷宫手表定制设计", category: "VI与IP陈列", client: "MARTELL 马爹利" },
+      { id: 55, title: "神奇动物在哪里 定制版", category: "VI与IP陈列", client: "VIVO X21" },
+    ].map(p => ({ ...p, image: placeholder16x9 }));
+
+    // --- Hooks ---
+    const useCustomCursor = () => {
+      const [position, setPosition] = useState({ x: -100, y: -100 });
+      const [isHovering, setIsHovering] = useState(false);
+      const [hoverText, setHoverText] = useState("");
+      const [isLightbox, setIsLightbox] = useState(false);
+
+      useEffect(() => {
+        const updateMousePosition = (e) => {
+          setPosition({ x: e.clientX, y: e.clientY });
+        };
+        window.addEventListener("mousemove", updateMousePosition);
+        return () => window.removeEventListener("mousemove", updateMousePosition);
+      }, []);
+
+      return { position, isHovering, setIsHovering, hoverText, setHoverText, isLightbox, setIsLightbox };
+    };
+
+    const useScrollReveal = (dependency) => {
+      useEffect(() => {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("translate-y-0", "opacity-100", "scale-100");
+                entry.target.classList.remove("translate-y-12", "opacity-0", "scale-95");
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.05, rootMargin: "0px 0px -50px 0px" }
+        );
+        const elements = document.querySelectorAll(".reveal-on-scroll");
+        elements.forEach((el) => {
+          el.classList.add("translate-y-12", "opacity-0", "scale-95");
+          el.classList.remove("translate-y-0", "opacity-100", "scale-100");
+          setTimeout(() => observer.observe(el), 50);
+        });
+        return () => elements.forEach((el) => observer.unobserve(el));
+      }, [dependency]);
+    };
+
+    const NoiseOverlay = () => (
+      <div 
+        className="pointer-events-none fixed inset-0 z-[1] h-full w-full opacity-[0.04] mix-blend-difference"
+        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
+      />
+    );
+
+    // --- 主程序 ---
+    function App() {
+      const [isDarkMode, setIsDarkMode] = useState(true);
+      const cursor = useCustomCursor();
+      const [user, setUser] = useState(null);
+      const [customProjects, setCustomProjects] = useState([]);
+      const [activeCategory, setActiveCategory] = useState("All");
+      const [lightboxImage, setLightboxImage] = useState(null);
+      const [showBackToTop, setShowBackToTop] = useState(false);
+      const [viewState, setViewState] = useState("portfolio"); 
+      const [passwordInput, setPasswordInput] = useState("");
+      const [newProject, setNewProject] = useState({ title: "", client: "", category: CATEGORIES[1], image: "" });
+
+      // Firebase 数据监听 (V8 写法)
+      useEffect(() => {
+        if (!auth) return;
+        const unsubscribe = auth.onAuthStateChanged((u) => {
+           if(u) { setUser(u); } else { auth.signInAnonymously(); }
+        });
+        return () => unsubscribe();
+      }, []);
+
+      useEffect(() => {
+        if (!user || !db) return;
+        const unsubscribe = db.collection('projects').onSnapshot((snapshot) => {
+          const fetched = [];
+          snapshot.forEach(doc => fetched.push(doc.data()));
+          fetched.sort((a, b) => b.id - a.id);
+          setCustomProjects(fetched);
+        });
+        return () => unsubscribe();
+      }, [user]);
+
+      const currentProjects = [...customProjects, ...INITIAL_PROJECTS];
+      useScrollReveal(activeCategory); 
+
+      const filteredProjects = activeCategory === "All" 
+        ? currentProjects 
+        : currentProjects.filter(p => p.category === activeCategory);
+
+      useEffect(() => {
+        let lastScrollY = window.scrollY;
+        const handleScroll = () => {
+          const currentScrollY = window.scrollY;
+          if (currentScrollY > 800 && currentScrollY < lastScrollY) setShowBackToTop(true);
+          else setShowBackToTop(false);
+          lastScrollY = currentScrollY;
+        };
+        if (viewState === 'portfolio') {
+          window.addEventListener("scroll", handleScroll, { passive: true });
+          return () => window.removeEventListener("scroll", handleScroll);
+        }
+      }, [viewState]);
+
+      const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      const handleMouseEnter = (text = "Explore") => {
+        cursor.setIsHovering(true); cursor.setHoverText(text);
+      };
+      const handleMouseLeave = () => {
+        cursor.setIsHovering(false); cursor.setHoverText("");
+      };
+
+      const openLightbox = (image) => {
+        setLightboxImage(image); cursor.setIsLightbox(true); cursor.setIsHovering(true); cursor.setHoverText("Close");
+        document.body.style.overflow = 'hidden';
+      };
+      const closeLightbox = () => {
+        setLightboxImage(null); cursor.setIsLightbox(false); cursor.setIsHovering(false);
+        document.body.style.overflow = 'auto';
+      };
+
+      const handleLogin = (e) => {
+        e.preventDefault();
+        if (passwordInput === "loki2026") {
+          setViewState("admin"); setPasswordInput(""); 
+        } else {
+          alert("密码错误 / Incorrect Password");
+        }
+      };
+
+      const handleAddProject = async (e) => {
+        e.preventDefault();
+        if (!newProject.title || !newProject.image) return alert("标题和图片链接是必填项！");
+        
+        const newId = Date.now();
+        const addedProject = { ...newProject, id: newId };
+
+        if (!user || !db) {
+          setCustomProjects([addedProject, ...customProjects]);
+          alert("本地发布成功！(提示：由于未配置 Firebase，刷新网页后数据会重置。请在代码中填写配置)");
+          setNewProject({ title: "", client: "", category: CATEGORIES[1], image: "" });
+          return;
+        }
+        
+        try {
+          await db.collection('projects').doc(newId.toString()).set(addedProject);
+          alert("云端发布成功！所有设备均已同步。");
+          setNewProject({ title: "", client: "", category: CATEGORIES[1], image: "" });
+        } catch (err) {
+          alert("保存失败: " + err.message);
+        }
+      };
+
+      const handleDeleteProject = async (id) => {
+        if (!window.confirm("确定要永久删除这个作品吗？")) return;
+        if (!user || !db) {
+          setCustomProjects(customProjects.filter(p => p.id !== id));
+          return;
+        }
+        try {
+          await db.collection('projects').doc(id.toString()).delete();
+        } catch (err) {
+          alert("删除失败: " + err.message);
+        }
+      };
+
+      if (viewState === "login") {
+        return (
+          <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col items-center justify-center">
+            <div className="w-full max-w-md p-8">
+              <button onClick={() => setViewState("portfolio")} className="mb-12 text-gray-500 hover:text-white flex items-center gap-2 transition-colors uppercase tracking-widest text-xs">
+                <ArrowLeft className="w-4 h-4" /> Back to site
+              </button>
+              <h2 className="text-4xl font-medium tracking-tighter mb-2">Director's Login</h2>
+              <p className="text-gray-500 text-sm mb-12">Access the content management system.</p>
+              <form onSubmit={handleLogin} className="flex flex-col gap-6">
+                <input type="password" placeholder="Enter Password" value={passwordInput} onChange={(e) => setPasswordInput(e.target.value)} className="w-full bg-transparent border-b border-gray-700 py-4 text-xl text-white placeholder-gray-700 outline-none focus:border-white transition-colors" autoFocus />
+                <button type="submit" className="mt-4 bg-white text-black py-4 font-bold tracking-widest uppercase text-sm hover:bg-gray-200 transition-colors">Authenticate</button>
+              </form>
+            </div>
+          </div>
+        );
+      }
+
+      if (viewState === "admin") {
+        return (
+          <div className="min-h-screen bg-[#0a0a0a] text-white p-6 md:p-12">
+            <div className="max-w-4xl mx-auto">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-800 pb-8 mb-12">
+                <div>
+                  <h1 className="text-3xl md:text-5xl font-medium tracking-tighter mb-2">Workspace CMS</h1>
+                  <p className="text-gray-500 text-sm tracking-widest uppercase">Currently managing {currentProjects.length} works</p>
+                </div>
+                <button onClick={() => setViewState("portfolio")} className="mt-6 md:mt-0 flex items-center gap-2 border border-white/20 px-6 py-3 rounded-full hover:bg-white hover:text-black transition-all text-xs tracking-widest uppercase font-bold">
+                  <ArrowLeft className="w-4 h-4" /> Exit CMS
+                </button>
+              </div>
+
+              <div className="bg-[#111] p-8 md:p-12 rounded-2xl border border-white/5">
+                <h2 className="text-xl font-bold tracking-widest uppercase mb-8 flex items-center gap-3">
+                  <Plus className="w-5 h-5 text-green-500" /> Publish New Work
+                </h2>
+                <form onSubmit={handleAddProject} className="flex flex-col gap-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="flex flex-col gap-2">
+                      <label className="text-xs text-gray-500 tracking-widest uppercase">Project Title</label>
+                      <input type="text" value={newProject.title} onChange={(e) => setNewProject({...newProject, title: e.target.value})} placeholder="e.g. 洛奇的密室 全新视觉" className="bg-transparent border-b border-gray-700 py-3 text-white outline-none focus:border-white transition-colors" required />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <label className="text-xs text-gray-500 tracking-widest uppercase">Client / Brand</label>
+                      <input type="text" value={newProject.client} onChange={(e) => setNewProject({...newProject, client: e.target.value})} placeholder="e.g. Loki's Room" className="bg-transparent border-b border-gray-700 py-3 text-white outline-none focus:border-white transition-colors" />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <label className="text-xs text-gray-500 tracking-widest uppercase">Category</label>
+                      <select value={newProject.category} onChange={(e) => setNewProject({...newProject, category: e.target.value})} className="bg-[#111] border-b border-gray-700 py-3 text-white outline-none focus:border-white transition-colors appearance-none">
+                        {CATEGORIES.filter(c => c !== "All").map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                      </select>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <label className="text-xs text-gray-500 tracking-widest uppercase">Image URL (16:9 recommended)</label>
+                      <input type="url" value={newProject.image} onChange={(e) => setNewProject({...newProject, image: e.target.value})} placeholder="https://your-image-url.jpg" className="bg-transparent border-b border-gray-700 py-3 text-white outline-none focus:border-white transition-colors" required />
+                    </div>
+                  </div>
+                  <button type="submit" className="mt-4 bg-white text-black py-4 rounded-lg font-bold tracking-widest uppercase text-sm hover:bg-green-400 hover:text-black transition-colors">Publish Project</button>
+                </form>
+              </div>
+
+              {customProjects.length > 0 && (
+                <div className="mt-12 bg-[#111] p-8 md:p-12 rounded-2xl border border-white/5 animate-in fade-in duration-500">
+                  <h2 className="text-xl font-bold tracking-widest uppercase mb-8 flex items-center gap-3">Cloud Projects</h2>
+                  <div className="flex flex-col gap-4">
+                    {customProjects.map(proj => (
+                      <div key={proj.id} className="flex justify-between items-center border-b border-gray-800 pb-4">
+                        <div className="flex items-center gap-4">
+                          <img src={proj.image} alt={proj.title} className="w-16 h-10 md:w-24 md:h-14 object-cover rounded" />
+                          <div>
+                            <div className="font-bold text-sm md:text-base">{proj.title}</div>
+                            <div className="text-xs text-gray-500">{proj.category} · {proj.client}</div>
+                          </div>
+                        </div>
+                        <button onClick={() => handleDeleteProject(proj.id)} className="p-3 text-gray-500 hover:bg-red-500/10 hover:text-red-500 rounded-full transition-colors" title="永久删除">
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div className={`${isDarkMode ? 'dark' : ''} ${lightboxImage ? '' : 'cursor-none'}`}>
+          <div className="min-h-screen">
+            <NoiseOverlay />
+            <div className={`fixed top-0 left-0 pointer-events-none z-[9999] hidden md:flex items-center justify-center rounded-full transition-all duration-300 ease-out mix-blend-difference ${cursor.isHovering ? 'w-24 h-24 bg-white' : 'w-3 h-3 bg-white'} ${cursor.isLightbox ? 'mix-blend-normal bg-[#f7f7f5]' : ''}`} style={{transform: `translate3d(${cursor.position.x}px, ${cursor.position.y}px, 0) translate(-50%, -50%)`}}>
+              {cursor.isHovering && <span className={`text-xs font-bold tracking-widest uppercase opacity-100 transition-opacity duration-300 ${cursor.isLightbox ? 'text-[#111]' : 'text-black'}`}>{cursor.hoverText}</span>}
+            </div>
+            {lightboxImage && (
+              <div className="fixed inset-0 z-[500] bg-[#0a0a0a]/95 backdrop-blur-xl flex items-center justify-center p-4 md:p-12 animate-in fade-in duration-300" onClick={closeLightbox}>
+                <button className="absolute top-6 right-6 text-white md:hidden z-[501]" onClick={closeLightbox}><X className="w-8 h-8" /></button>
+                <img src={lightboxImage} alt="Fullscreen" className="max-w-full max-h-full object-contain shadow-2xl animate-in zoom-in-95 duration-500" />
+              </div>
+            )}
+            <button onClick={scrollToTop} onMouseEnter={() => handleMouseEnter("Top")} onMouseLeave={handleMouseLeave} className={`fixed bottom-8 right-8 z-[100] p-4 rounded-full bg-[#111] dark:bg-white text-white dark:text-black shadow-2xl transition-all duration-500 transform ${showBackToTop ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0 pointer-events-none'} ${!lightboxImage ? 'cursor-none' : ''}`}>
+              <ArrowUp className="w-5 h-5" />
+            </button>
+            <nav className="fixed top-0 w-full p-6 md:p-10 flex justify-between items-center z-50 mix-blend-difference text-white">
+              <div className="text-xs md:text-sm font-bold tracking-widest uppercase">Loki Wang ©</div>
+              <div className="flex items-center gap-8">
+                <div className="text-xs md:text-sm font-bold tracking-widest uppercase hidden md:block">Creative Director</div>
+                <button onClick={() => setIsDarkMode(!isDarkMode)} onMouseEnter={() => handleMouseEnter(isDarkMode ? "Light" : "Dark")} onMouseLeave={handleMouseLeave} className={`p-2 rounded-full border border-white/20 hover:bg-white hover:text-black transition-colors ${!lightboxImage ? 'cursor-none' : ''}`}>
+                  {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                </button>
+              </div>
+            </nav>
+            <header className="w-full h-screen flex flex-col md:flex-row relative z-10 animate-in fade-in duration-1000">
+              <div className="w-full md:w-2/3 h-1/2 md:h-full relative overflow-hidden group" onClick={() => openLightbox(HERO_PROJECTS[0].image)} onMouseEnter={() => handleMouseEnter("View")} onMouseLeave={handleMouseLeave}>
+                <img src={HERO_PROJECTS[0].image} alt={HERO_PROJECTS[0].title} className="w-full h-full object-cover transition-transform duration-[2s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 flex flex-col justify-end p-8 md:p-16">
+                  <span className="text-white/70 text-xs tracking-widest uppercase mb-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-100">{HERO_PROJECTS[0].category} · {HERO_PROJECTS[0].client}</span>
+                  <h2 className="text-white text-4xl md:text-7xl font-medium tracking-tighter transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">{HERO_PROJECTS[0].title}</h2>
+                </div>
+              </div>
+              <div className="w-full md:w-1/3 h-1/2 md:h-full flex flex-row md:flex-col">
+                <div className="w-1/2 md:w-full h-full md:h-1/2 relative overflow-hidden group" onClick={() => openLightbox(HERO_PROJECTS[1].image)} onMouseEnter={() => handleMouseEnter("View")} onMouseLeave={handleMouseLeave}>
+                  <img src={HERO_PROJECTS[1].image} className="w-full h-full object-cover transition-transform duration-[2s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 flex flex-col justify-end p-6 md:p-10">
+                    <span className="text-white/70 text-[10px] tracking-widest uppercase mb-1 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-100">{HERO_PROJECTS[1].client}</span>
+                    <h2 className="text-white text-2xl md:text-4xl font-medium tracking-tighter transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">{HERO_PROJECTS[1].title}</h2>
+                  </div>
+                </div>
+                <div className="w-1/2 md:w-full h-full md:h-1/2 relative overflow-hidden group" onClick={() => openLightbox(HERO_PROJECTS[2].image)} onMouseEnter={() => handleMouseEnter("View")} onMouseLeave={handleMouseLeave}>
+                  <img src={HERO_PROJECTS[2].image} className="w-full h-full object-cover transition-transform duration-[2s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 flex flex-col justify-end p-6 md:p-10">
+                    <span className="text-white/70 text-[10px] tracking-widest uppercase mb-1 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-100">{HERO_PROJECTS[2].client}</span>
+                    <h2 className="text-white text-2xl md:text-4xl font-medium tracking-tighter transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">{HERO_PROJECTS[2].title}</h2>
+                  </div>
+                </div>
+              </div>
+            </header>
+
+            <main className="px-4 md:px-12 pt-24 md:pt-32">
+              <div className="sticky top-0 z-40 bg-[#f7f7f5]/90 dark:bg-[#0a0a0a]/90 backdrop-blur-xl py-6 border-b border-[#111]/10 dark:border-white/10 -mx-4 px-4 md:-mx-12 md:px-12 mb-16 flex overflow-x-auto hide-scrollbar gap-6 md:gap-12 transition-colors duration-700">
+                {CATEGORIES.map((cat) => (
+                  <button key={cat} onClick={() => setActiveCategory(cat)} onMouseEnter={() => handleMouseEnter("Filter")} onMouseLeave={handleMouseLeave} className={`text-xs md:text-sm font-bold tracking-widest uppercase whitespace-nowrap transition-colors duration-300 ${activeCategory === cat ? 'text-[#111] border-b-2 border-[#111] dark:text-white dark:border-white pb-1' : 'text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300'} ${!lightboxImage ? 'cursor-none' : ''}`}>
+                    {cat}
+                  </button>
+                ))}
+              </div>
+              <section className="pb-32 min-h-screen relative z-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-20 md:gap-x-24 md:gap-y-32" key={activeCategory}>
+                  {filteredProjects.map((project, index) => (
+                    <div key={project.id} className="group flex flex-col reveal-on-scroll translate-y-12 opacity-0 transition-all duration-1000 ease-out" style={{ transitionDelay: `${(index % 6) * 100}ms` }}>
+                      <div className="w-full aspect-video overflow-hidden relative bg-gray-200 dark:bg-gray-800" onClick={() => openLightbox(project.image)} onMouseEnter={() => handleMouseEnter("Expand")} onMouseLeave={handleMouseLeave}>
+                        <img src={project.image} alt={project.title} className="w-full h-full object-cover transition-transform duration-[1.5s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105" loading="lazy" />
+                        <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                          <span className="bg-white text-black px-6 py-3 text-xs font-bold uppercase tracking-widest hidden md:inline-block">View Fullscreen</span>
+                        </div>
+                      </div>
+                      <div className="mt-6 flex flex-col gap-2">
+                        <h3 className="text-2xl md:text-3xl font-medium tracking-tight text-[#111] dark:text-[#f7f7f5] transition-colors">{project.title}</h3>
+                        <div className="flex justify-between items-center text-[10px] md:text-xs font-bold tracking-widest uppercase text-gray-500">
+                          <span>{project.client}</span><span>{project.category}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {filteredProjects.length === 0 && <div className="py-32 text-center text-gray-400 dark:text-gray-600 text-sm tracking-widest uppercase">Updating soon...</div>}
+              </section>
+
+              <section className="py-32 md:py-48 border-t border-[#111]/10 dark:border-white/10 relative z-10 transition-colors duration-700">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-16 md:gap-24 items-start max-w-7xl mx-auto">
+                  <div className="md:col-span-5 flex flex-col gap-12 reveal-on-scroll translate-y-12 opacity-0 transition-all duration-1000">
+                    <h2 className="text-xs font-bold tracking-widest uppercase text-gray-400 dark:text-gray-500">Philosophy</h2>
+                    <div className="text-2xl md:text-3xl lg:text-4xl leading-snug font-medium tracking-tight font-serif italic text-[#111] dark:text-[#f7f7f5]">
+                      "Research is to see what everybody else has seen and to think what nobody else has thought."
+                    </div>
+                    <p className="text-sm text-gray-500 tracking-widest uppercase">— Albert Szent-Gyorgyi</p>
+                  </div>
+                  <div className="md:col-span-7 flex flex-col gap-8 reveal-on-scroll translate-y-12 opacity-0 transition-all duration-1000 delay-200">
+                     <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 leading-relaxed font-light">拥有16年品牌营销与4年创业合伙人经验。擅长将深刻的消费者洞察转化为驱动业务增长的整合营销策略，深度参与客户商业决策，以终为始打磨创意方案。</p>
+                     <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 leading-relaxed font-light">曾主导100+项目，覆盖快消、国际品牌、高端酒店及娱乐IP等多元领域。现深度探索 AIGC 领域，独立跑通从 LLM 脚本生成到视觉落地的全链路，利用 AI 技术将产出效率提升40%以上。</p>
+                  </div>
+                </div>
+              </section>
+            </main>
+
+            <footer className="bg-[#111] dark:bg-black text-[#f7f7f5] px-4 md:px-12 pt-32 pb-12 flex flex-col justify-between min-h-[80vh] relative z-10 transition-colors duration-700 border-t border-white/5">
+              <div className="reveal-on-scroll translate-y-12 opacity-0 transition-all duration-1000 max-w-7xl">
+                <div className="flex items-center gap-3 mb-16">
+                  <span className="relative flex h-3 w-3"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span></span>
+                  <span className="text-xs font-bold tracking-widest uppercase text-gray-400">Currently accepting selected projects</span>
+                </div>
+                <h2 className="text-3xl md:text-5xl lg:text-7xl leading-tight font-medium tracking-tighter mb-12">
+                  Ready to craft the next <br className="hidden md:block"/><span className="italic font-serif text-gray-400">industry benchmark?</span>
+                </h2>
+                <p className="text-sm md:text-base text-gray-400 max-w-xl mb-16 font-light leading-relaxed">Great design is invisible, but its impact is undeniable. Let's combine strategic insight with avant-garde aesthetics to elevate your brand.</p>
+                <a href="mailto:pxnjack@gmail.com?subject=Project%20Inquiry" className={`group inline-flex flex-wrap items-center gap-4 md:gap-8 text-[7vw] md:text-[5vw] leading-none tracking-tighter font-medium text-white hover:text-gray-300 transition-colors border-b-2 border-transparent hover:border-white pb-2 ${!lightboxImage ? 'cursor-none' : ''}`} onMouseEnter={() => handleMouseEnter("Say Hi")} onMouseLeave={handleMouseLeave}>
+                  <span>pxnjack@gmail.com</span><ArrowUpRight className="w-10 h-10 md:w-16 md:h-16 group-hover:rotate-45 group-hover:translate-x-4 transition-transform duration-500" />
+                </a>
+              </div>
+              <div className="mt-32 pt-12 border-t border-white/10 flex flex-col md:flex-row justify-between items-start md:items-end gap-12 text-[10px] md:text-xs font-bold tracking-widest uppercase text-gray-500 reveal-on-scroll translate-y-12 opacity-0 transition-all duration-1000 delay-200">
+                <div className="flex flex-col md:flex-row gap-4 md:gap-12">
+                   <span className={`hover:text-white transition-colors ${!lightboxImage ? 'cursor-none' : ''}`} onMouseEnter={() => handleMouseEnter("Copy")} onMouseLeave={handleMouseLeave}>WeChat: Lokipxn</span>
+                   <span className={`hover:text-white transition-colors ${!lightboxImage ? 'cursor-none' : ''}`} onMouseEnter={() => handleMouseEnter("Call")} onMouseLeave={handleMouseLeave}>Tel: 138 1669 7359</span>
+                   <button onClick={() => setViewState("login")} className={`flex items-center gap-2 hover:text-white transition-colors ${!lightboxImage ? 'cursor-none' : ''}`} onMouseEnter={() => handleMouseEnter("Login")} onMouseLeave={handleMouseLeave}>
+                     <Lock className="w-3 h-3" /> Admin
+                   </button>
+                </div>
+                <p>© {new Date().getFullYear()} LOKI WANG. DESIGNED FOR IMPACT.</p>
+              </div>
+            </footer>
+          </div>
+        </div>
+      );
+    }
+
+    // 挂载应用
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
