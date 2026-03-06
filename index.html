@@ -99,13 +99,15 @@
     const IconLock = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>;
     const IconArrowLeft = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="m12 19-7-7 7-7M19 12H5"/></svg>;
     const IconTrash = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2M10 11v6M14 11v6"/></svg>;
+    const IconEdit = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>;
+    const IconPlus = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 5v14M5 12h14"/></svg>;
 
     const CATEGORIES = ["All", "带领团队", "TVC与宣言", "主视觉与海报", "AIGC作品", "包装设计", "VI与IP陈列"];
     
     // GIA Style 高级占位图 (已统一为 16:9 裁剪)
-    const p_arch = "https://ibb.co/wrrTpGg9"; 
-    const p_art = "https://ibb.co/ZRSVsd04"; 
-    const p_detail = "https://ibb.co/dJ5h1Xy4"; 
+    const p_arch = "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1920&h=1080&auto=format&fit=crop"; 
+    const p_art = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1920&h=1080&auto=format&fit=crop"; 
+    const p_detail = "https://images.unsplash.com/photo-1542314831-c6a4d1424b15?q=80&w=1920&h=1080&auto=format&fit=crop"; 
 
     // --- 首屏主打巨幕作品 ---
     const HERO_PROJECTS = [
@@ -264,10 +266,9 @@
     function App() {
       useSmoothScroll();
       
-      const [isDarkMode, setIsDarkMode] = useState(false); // 默认亮色系更符合 GIA 的审美
+      const [isDarkMode, setIsDarkMode] = useState(false); 
       const cursor = useCustomCursor();
 
-      // 修复 2：同步切换 html 标签的 dark 类名，确保整个网页（含 body 背景）都能变色
       useEffect(() => {
         if (isDarkMode) {
           document.documentElement.classList.add('dark');
@@ -282,6 +283,9 @@
       const [lightboxImage, setLightboxImage] = useState(null);
       const [viewState, setViewState] = useState("portfolio"); 
       const [passwordInput, setPasswordInput] = useState("");
+      
+      // Admin 编辑状态
+      const [editingId, setEditingId] = useState(null);
       const [newProject, setNewProject] = useState({ title: "", client: "", category: CATEGORIES[1], image: "" });
 
       // Firebase 数据监听
@@ -302,10 +306,17 @@
         return () => unsubscribe();
       }, [user]);
 
-      const currentProjects = [...customProjects, ...INITIAL_PROJECTS];
+      // --- 数据智能合并机制 (处理云端修改、删除与初始数据的冲突) ---
+      const deletedIds = new Set(customProjects.filter(p => p._deleted).map(p => p.id));
+      const validCustomProjects = customProjects.filter(p => !p._deleted);
+      const validCustomIds = new Set(validCustomProjects.map(p => p.id));
+      
+      // 如果一个初始项目被修改（在 customProjects 存在同 ID），或者被软删除（_deleted: true），就从默认列表中隐藏它
+      const activeInitial = INITIAL_PROJECTS.filter(p => !validCustomIds.has(p.id) && !deletedIds.has(p.id));
+      const currentProjects = [...validCustomProjects, ...activeInitial];
+
       const filteredProjects = activeCategory === "All" ? currentProjects : currentProjects.filter(p => p.category === activeCategory);
 
-      // 触发 GSAP 动画
       useGsapAnimations(activeCategory);
 
       // 交互控制
@@ -316,23 +327,61 @@
 
       // 后台逻辑
       const handleLogin = (e) => { e.preventDefault(); if(passwordInput === "loki2026") { setViewState("admin"); setPasswordInput(""); } else alert("密码错误"); };
-      const handleAddProject = async (e) => {
+      
+      // 保存或更新作品
+      const handleSaveProject = async (e) => {
         e.preventDefault();
-        const newId = Date.now();
-        const p = { ...newProject, id: newId };
+        if (!newProject.title || !newProject.image) return alert("标题和图片链接是必填项！");
+        
+        const targetId = editingId || Date.now();
+        const p = { ...newProject, id: targetId };
+        
         if (!user || !db) {
-          setCustomProjects([p, ...customProjects]);
-          alert("本地测试发布成功！");
-          return setNewProject({ title: "", client: "", category: CATEGORIES[1], image: "" });
+          // 本地无后端测试兼容
+          setCustomProjects([p, ...customProjects.filter(c => c.id !== targetId)]);
+          alert(editingId ? "本地测试：修改成功！" : "本地测试：发布成功！");
+          setNewProject({ title: "", client: "", category: CATEGORIES[1], image: "" });
+          setEditingId(null);
+          return;
         }
-        await db.collection('projects').doc(newId.toString()).set(p);
-        alert("云端发布成功！");
+        
+        try {
+          await db.collection('projects').doc(targetId.toString()).set(p);
+          alert(editingId ? "云端修改成功！" : "云端发布成功！");
+          setNewProject({ title: "", client: "", category: CATEGORIES[1], image: "" });
+          setEditingId(null);
+        } catch (err) {
+          alert("保存失败: " + err.message);
+        }
+      };
+
+      // 取消编辑
+      const cancelEdit = () => {
+        setEditingId(null);
         setNewProject({ title: "", client: "", category: CATEGORIES[1], image: "" });
       };
+
+      // 删除作品 (软删除覆盖机制)
       const handleDelete = async (id) => {
-        if(!window.confirm("确认删除？")) return;
-        if(!db) return setCustomProjects(customProjects.filter(p=>p.id!==id));
-        await db.collection('projects').doc(id.toString()).delete();
+        if(!window.confirm("确认删除？删除后无法恢复。")) return;
+        
+        if(!db) {
+          setCustomProjects([...customProjects, { id, _deleted: true }]);
+          return;
+        }
+        
+        try {
+          const isInitial = INITIAL_PROJECTS.some(p => p.id === id);
+          if (isInitial) {
+             // 如果删除的是自带作品，我们在云端标记它为已删除（覆盖）
+             await db.collection('projects').doc(id.toString()).set({ id, _deleted: true });
+          } else {
+             // 删除的是云端作品，直接移除文档
+             await db.collection('projects').doc(id.toString()).delete();
+          }
+        } catch (err) {
+          alert("删除失败: " + err.message);
+        }
       }
 
       // --- Admin View ---
@@ -350,28 +399,72 @@
                 </form>
               </div>
             ) : (
-              <div className="w-full max-w-4xl pt-20">
+              <div className="w-full max-w-4xl pt-20 pb-20">
                 <div className="flex justify-between items-center border-b border-white/10 pb-8 mb-12">
                   <h1 className="text-4xl font-serif italic">Workspace</h1>
-                  <button onClick={() => setViewState("portfolio")} className="text-xs tracking-widest uppercase flex items-center gap-2 hover:text-gia-accent transition"><IconArrowLeft className="w-4 h-4"/> Exit</button>
+                  <button onClick={() => setViewState("portfolio")} className="text-xs tracking-widest uppercase flex items-center gap-2 hover:text-gia-accent transition"><IconArrowLeft className="w-4 h-4"/> Exit CMS</button>
                 </div>
-                <div className="bg-white/5 p-8 md:p-12 rounded-xl">
-                  <form onSubmit={handleAddProject} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                {/* 动态表单 (新增 / 修改) */}
+                <div className="bg-white/5 p-8 md:p-12 rounded-xl transition-all duration-300">
+                  <h2 className="text-xl tracking-widest uppercase mb-8 flex items-center gap-3 font-sans font-bold text-white">
+                    {editingId ? <IconEdit className="w-5 h-5 text-blue-400" /> : <IconPlus className="w-5 h-5 text-green-400" />}
+                    {editingId ? "Edit Project" : "Publish New Work"}
+                  </h2>
+                  <form onSubmit={handleSaveProject} className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="flex flex-col gap-2"><label className="text-xs uppercase tracking-widest text-gia-accent">Title</label><input type="text" value={newProject.title} onChange={e=>setNewProject({...newProject,title:e.target.value})} className="bg-transparent border-b border-white/20 py-2 outline-none focus:border-white" required/></div>
                     <div className="flex flex-col gap-2"><label className="text-xs uppercase tracking-widest text-gia-accent">Client</label><input type="text" value={newProject.client} onChange={e=>setNewProject({...newProject,client:e.target.value})} className="bg-transparent border-b border-white/20 py-2 outline-none focus:border-white"/></div>
                     <div className="flex flex-col gap-2"><label className="text-xs uppercase tracking-widest text-gia-accent">Category</label><select value={newProject.category} onChange={e=>setNewProject({...newProject,category:e.target.value})} className="bg-[#222] border-b border-white/20 py-2 outline-none">{CATEGORIES.filter(c=>c!=="All").map(c=><option key={c}>{c}</option>)}</select></div>
                     <div className="flex flex-col gap-2"><label className="text-xs uppercase tracking-widest text-gia-accent">Image URL (16:9)</label><input type="url" value={newProject.image} onChange={e=>setNewProject({...newProject,image:e.target.value})} className="bg-transparent border-b border-white/20 py-2 outline-none focus:border-white" required/></div>
-                    <button type="submit" className="md:col-span-2 mt-4 bg-white text-black py-4 text-xs font-bold uppercase tracking-widest hover:bg-gray-200">Publish</button>
+                    
+                    <div className="md:col-span-2 mt-4 flex flex-col md:flex-row gap-4">
+                      <button type="submit" className="flex-1 bg-white text-black py-4 text-xs font-bold uppercase tracking-widest hover:bg-gray-200 transition-colors">
+                        {editingId ? "Update Project" : "Publish"}
+                      </button>
+                      {editingId && (
+                        <button type="button" onClick={cancelEdit} className="bg-white/10 text-white md:w-48 py-4 text-xs font-bold uppercase tracking-widest hover:bg-white/20 transition-colors">
+                          Cancel
+                        </button>
+                      )}
+                    </div>
                   </form>
                 </div>
-                <div className="mt-12 flex flex-col gap-4">
-                  {customProjects.map(p => (
-                    <div key={p.id} className="flex justify-between items-center bg-white/5 p-4 rounded-lg">
-                      <div className="flex items-center gap-4"><img src={p.image} className="w-16 h-10 object-cover"/><span className="font-serif italic">{p.title}</span></div>
-                      <button onClick={()=>handleDelete(p.id)} className="text-red-400 hover:text-red-300"><IconTrash className="w-5 h-5"/></button>
-                    </div>
-                  ))}
-                </div>
+                
+                {/* 涵盖全量项目管理的列表 */}
+                {currentProjects.length > 0 && (
+                  <div className="mt-12 flex flex-col gap-4 animate-in fade-in duration-500">
+                    <h2 className="text-lg tracking-widest uppercase mb-4 flex items-center gap-3 font-sans font-bold text-gia-accent">All Projects ({currentProjects.length})</h2>
+                    {currentProjects.map(p => (
+                      <div key={p.id} className={`flex justify-between items-center bg-white/5 p-4 rounded-lg border border-transparent transition-colors ${editingId === p.id ? 'border-blue-500/50 bg-blue-500/10' : ''}`}>
+                        <div className="flex items-center gap-4">
+                          <img src={p.image} className="w-16 h-10 md:w-24 md:h-14 object-cover rounded shadow-md"/>
+                          <div className="flex flex-col gap-1">
+                            <span className="font-serif italic text-white md:text-lg">{p.title}</span>
+                            <span className="text-[10px] uppercase tracking-widest text-gia-accent font-sans">{p.category} · {p.client}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button 
+                            onClick={() => {
+                              setEditingId(p.id);
+                              setNewProject({ title: p.title, client: p.client || "", category: p.category, image: p.image });
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }} 
+                            className="p-3 text-blue-400 hover:bg-blue-400/10 rounded-full transition-colors" title="Edit"
+                          >
+                            <IconEdit className="w-5 h-5"/>
+                          </button>
+                          <button 
+                            onClick={()=>handleDelete(p.id)} 
+                            className="p-3 text-red-400 hover:bg-red-400/10 rounded-full transition-colors" title="Delete"
+                          >
+                            <IconTrash className="w-5 h-5"/>
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -453,7 +546,7 @@
                 </div>
               </section>
 
-              {/* 修复 1：将吸顶位置从 top-0 下移到 top-[80px]/top-[110px]，避开顶部固定导航栏的遮挡 */}
+              {/* 吸顶导航避开顶部固定栏遮挡 */}
               <div className="sticky top-[80px] md:top-[110px] z-40 bg-gia-bg/90 dark:bg-gia-darkBg/90 backdrop-blur-xl py-6 border-b border-gia-text/10 dark:border-gia-darkText/10 mb-20 flex overflow-x-auto hide-scrollbar gap-8 md:gap-12 transition-colors duration-700 -mx-4 px-4 md:mx-0 md:px-0">
                 {CATEGORIES.map((cat) => (
                   <button key={cat} onClick={() => setActiveCategory(cat)} onMouseEnter={() => onHover("Filter")} onMouseLeave={onLeave} className={`text-xs font-sans tracking-[0.15em] uppercase whitespace-nowrap transition-all duration-300 ${activeCategory === cat ? 'text-gia-text dark:text-white border-b border-gia-text dark:border-white pb-1' : 'text-gia-accent hover:text-gia-text dark:hover:text-white'} ${!lightboxImage ? 'cursor-none' : ''}`}>
@@ -462,24 +555,20 @@
                 ))}
               </div>
 
-              {/* 作品画廊 (修改为 aspect-video 16:9 比例展示) */}
+              {/* 作品画廊 (宽屏 aspect-video 16:9 比例) */}
               <section className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-24 md:gap-y-32" key={activeCategory}>
                 {filteredProjects.map((project, index) => {
-                  // GIA 喜欢交错排列，我们让偶数项向下偏移
                   const isEven = index % 2 !== 0;
                   return (
                     <div key={project.id} className={`project-card group flex flex-col ${isEven ? 'md:mt-32' : ''}`}>
                       
-                      {/* 内部自带视差的图片容器 - 修改为宽屏 aspect-video (16:9) */}
                       <div className="w-full overflow-hidden relative bg-gray-200 dark:bg-gray-800 parallax-container aspect-video" onClick={() => openLightbox(project.image)} onMouseEnter={() => onHover("View")} onMouseLeave={onLeave}>
                         <div className="absolute inset-0 w-full h-[120%] -top-[10%]">
                            <img src={project.image} alt={project.title} className="w-full h-full object-cover transition-transform duration-[2s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.03]" loading="lazy" />
                         </div>
-                        {/* 优雅的半透明遮罩 */}
                         <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                       </div>
 
-                      {/* 项目信息 (极简社论排版) */}
                       <div className="mt-8 flex flex-col gap-3">
                         <div className="flex items-center gap-4 text-[10px] uppercase tracking-[0.2em] text-gia-accent font-sans">
                           <span>{project.category}</span>
