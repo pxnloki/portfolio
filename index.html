@@ -102,10 +102,10 @@
 
     const CATEGORIES = ["All", "带领团队", "TVC与宣言", "主视觉与海报", "AIGC作品", "包装设计", "VI与IP陈列"];
     
-    // GIA Style 高级占位图
-    const p_arch = "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2000&auto=format&fit=crop"; 
-    const p_art = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1600&auto=format&fit=crop"; 
-    const p_detail = "https://images.unsplash.com/photo-1542314831-c6a4d1424b15?q=80&w=1600&auto=format&fit=crop"; 
+    // GIA Style 高级占位图 (已统一为 16:9 裁剪)
+    const p_arch = "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1920&h=1080&auto=format&fit=crop"; 
+    const p_art = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1920&h=1080&auto=format&fit=crop"; 
+    const p_detail = "https://images.unsplash.com/photo-1542314831-c6a4d1424b15?q=80&w=1920&h=1080&auto=format&fit=crop"; 
 
     // --- 首屏主打巨幕作品 ---
     const HERO_PROJECTS = [
@@ -360,7 +360,7 @@
                     <div className="flex flex-col gap-2"><label className="text-xs uppercase tracking-widest text-gia-accent">Title</label><input type="text" value={newProject.title} onChange={e=>setNewProject({...newProject,title:e.target.value})} className="bg-transparent border-b border-white/20 py-2 outline-none focus:border-white" required/></div>
                     <div className="flex flex-col gap-2"><label className="text-xs uppercase tracking-widest text-gia-accent">Client</label><input type="text" value={newProject.client} onChange={e=>setNewProject({...newProject,client:e.target.value})} className="bg-transparent border-b border-white/20 py-2 outline-none focus:border-white"/></div>
                     <div className="flex flex-col gap-2"><label className="text-xs uppercase tracking-widest text-gia-accent">Category</label><select value={newProject.category} onChange={e=>setNewProject({...newProject,category:e.target.value})} className="bg-[#222] border-b border-white/20 py-2 outline-none">{CATEGORIES.filter(c=>c!=="All").map(c=><option key={c}>{c}</option>)}</select></div>
-                    <div className="flex flex-col gap-2"><label className="text-xs uppercase tracking-widest text-gia-accent">Image URL (16:9/4:3)</label><input type="url" value={newProject.image} onChange={e=>setNewProject({...newProject,image:e.target.value})} className="bg-transparent border-b border-white/20 py-2 outline-none focus:border-white" required/></div>
+                    <div className="flex flex-col gap-2"><label className="text-xs uppercase tracking-widest text-gia-accent">Image URL (16:9)</label><input type="url" value={newProject.image} onChange={e=>setNewProject({...newProject,image:e.target.value})} className="bg-transparent border-b border-white/20 py-2 outline-none focus:border-white" required/></div>
                     <button type="submit" className="md:col-span-2 mt-4 bg-white text-black py-4 text-xs font-bold uppercase tracking-widest hover:bg-gray-200">Publish</button>
                   </form>
                 </div>
@@ -462,7 +462,7 @@
                 ))}
               </div>
 
-              {/* 作品画廊 (GIA Style Staggered Grid with Parallax Images) */}
+              {/* 作品画廊 (修改为 aspect-video 16:9 比例展示) */}
               <section className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-24 md:gap-y-32" key={activeCategory}>
                 {filteredProjects.map((project, index) => {
                   // GIA 喜欢交错排列，我们让偶数项向下偏移
@@ -470,8 +470,8 @@
                   return (
                     <div key={project.id} className={`project-card group flex flex-col ${isEven ? 'md:mt-32' : ''}`}>
                       
-                      {/* 内部自带视差的图片容器 */}
-                      <div className="w-full overflow-hidden relative bg-gray-200 dark:bg-gray-800 parallax-container aspect-[4/5] md:aspect-[3/4]" onClick={() => openLightbox(project.image)} onMouseEnter={() => onHover("View")} onMouseLeave={onLeave}>
+                      {/* 内部自带视差的图片容器 - 修改为宽屏 aspect-video (16:9) */}
+                      <div className="w-full overflow-hidden relative bg-gray-200 dark:bg-gray-800 parallax-container aspect-video" onClick={() => openLightbox(project.image)} onMouseEnter={() => onHover("View")} onMouseLeave={onLeave}>
                         <div className="absolute inset-0 w-full h-[120%] -top-[10%]">
                            <img src={project.image} alt={project.title} className="w-full h-full object-cover transition-transform duration-[2s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.03]" loading="lazy" />
                         </div>
@@ -551,6 +551,5 @@
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<App />);
   </script>
-  <script type="module" src="/index.tsx"></script>
 </body>
 </html>
