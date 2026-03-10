@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Loki Wang | Creative Director</title>
 
-  <!-- 1. 引入高级字体 (GIA 风格的核心：优雅衬线体 + 极简无衬线体) -->
+  <!-- 1. 引入高级字体 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
@@ -18,18 +18,17 @@
       theme: {
         extend: {
           colors: {
-            // GIA 风格的大地色系
             gia: {
-              bg: '#EAE7E0',       // 高级米灰背景
-              text: '#1C1C1A',     // 深炭黑文字
-              accent: '#8B8476',   // 辅助灰褐色
-              darkBg: '#1A1A1A',   // 深色模式背景
-              darkText: '#EAE7E0'  // 深色模式文字
+              bg: '#EAE7E0',       
+              text: '#1C1C1A',     
+              accent: '#8B8476',   
+              darkBg: '#1A1A1A',   
+              darkText: '#EAE7E0'  
             }
           },
           fontFamily: {
             sans: ['Inter', 'sans-serif'],
-            serif: ['Playfair Display', 'serif'], // 引入优雅的衬线体
+            serif: ['Playfair Display', 'serif'], 
           }
         }
       }
@@ -37,31 +36,20 @@
   </script>
   
   <style>
-    /* 隐藏原生滚动条，交给 Lenis 处理 */
     ::-webkit-scrollbar { display: none; }
     body { -ms-overflow-style: none; scrollbar-width: none; }
     
-    /* 文字遮罩动画基础样式 */
-    .mask-text {
-      overflow: hidden;
-      display: inline-block;
-      vertical-align: top;
-    }
-    .mask-text-inner {
-      display: inline-block;
-      transform: translateY(110%);
-    }
+    .mask-text { overflow: hidden; display: inline-block; vertical-align: top; }
+    .mask-text-inner { display: inline-block; transform: translateY(110%); }
   </style>
 
-  <!-- 3. 引入 React, Babel, GSAP, Lenis (交互灵魂) -->
+  <!-- 3. 引入 React, Babel, GSAP, Lenis -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   
-  <!-- GSAP & ScrollTrigger -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-  <!-- Lenis Smooth Scroll -->
   <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
 
   <!-- 4. 引入 Firebase V8 -->
@@ -70,7 +58,6 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 </head>
 
-<!-- 应用 GIA 风格主题色 -->
 <body class="bg-gia-bg dark:bg-gia-darkBg text-gia-text dark:text-gia-darkText selection:bg-gia-text selection:text-gia-bg dark:selection:bg-gia-darkText dark:selection:text-gia-darkBg font-sans overflow-x-hidden transition-colors duration-1000 ease-in-out">
   
   <div id="root"></div>
@@ -78,9 +65,7 @@
   <script type="text/babel">
     const { useState, useEffect, useLayoutEffect, useRef } = React;
 
-    // --- Firebase 配置区 ---
     const firebaseConfig = { apiKey: "", authDomain: "", projectId: "" };
-
     let db = null; let auth = null;
     try {
       if (firebaseConfig.apiKey) {
@@ -91,7 +76,6 @@
     } catch(e) { console.warn("Firebase fallback"); }
     const appId = typeof window.__app_id !== 'undefined' ? window.__app_id : 'loki-portfolio-2026';
 
-    // --- 内置极简图标 ---
     const IconArrowUpRight = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>;
     const IconX = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M18 6 6 18M6 6l12 12"/></svg>;
     const IconMoon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>;
@@ -102,78 +86,98 @@
     const IconEdit = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>;
     const IconPlus = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 5v14M5 12h14"/></svg>;
 
-    const CATEGORIES = ["All", "带领团队", "TVC与宣言", "主视觉与海报", "AIGC作品", "包装设计", "VI与IP陈列"];
+    // 动态更新分类，加入了 UIUX 并修正了 VI 陈列的名字
+    const CATEGORIES = ["All", "带领团队", "TVC与宣言", "主视觉与海报", "UIUX", "AIGC作品", "包装设计", "VI & IP 生动化陈列"];
     
-    // GIA Style 高级占位图 (已统一为 16:9 裁剪)
-    const p_arch = "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1920&h=1080&auto=format&fit=crop"; 
-    const p_art = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1920&h=1080&auto=format&fit=crop"; 
-    const p_detail = "https://images.unsplash.com/photo-1542314831-c6a4d1424b15?q=80&w=1920&h=1080&auto=format&fit=crop"; 
-
-    // --- 首屏主打巨幕作品 ---
-    const HERO_PROJECTS = [
-      { id: 'h1', title: "Mustang 虎虎生威", category: "主视觉与海报", client: "Ford", image: p_arch },
-      { id: 'h2', title: "天灯的祝福", category: "整合营销", client: "Banyan Tree", image: p_art },
-      { id: 'h3', title: "洛奇的密室", category: "AIGC 概念视觉", client: "Loki's Room", image: p_detail },
+    // --- 首屏循环播放的巨幕图片 ---
+    const HERO_SLIDER_IMAGES = [
+      "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131838282_IMG_00054.jpeg",
+      "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131882115_IMG_00056.jpeg",
+      "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131886811_IMG_00057.jpeg",
+      "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131837399_IMG_00058.jpeg",
+      "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131812573_IMG_00029.jpeg"
     ];
 
-    // --- 完整作品库 (55项) ---
+    // --- 完整作品库 (全面替换为你提供的最新大纲内容) ---
     const INITIAL_PROJECTS = [
-      { id: 1, title: "天灯的祝福 / 整合营销", category: "带领团队", client: "Banyan Tree 悦榕酒店" },
-      { id: 2, title: "不将就是我们的讲究 TVC", category: "带领团队", client: "Ecowater 怡口净水" },
-      { id: 3, title: "618 裸眼3D空降美罗城", category: "带领团队", client: "Weber 威焙" },
-      { id: 4, title: "东风日产金融 全年案 / 通勤套装", category: "带领团队", client: "DNAF" },
-      { id: 5, title: "创造合适 / Mustang 虎虎生威", category: "带领团队", client: "Ford 福特" },
-      { id: 6, title: "小黑裙 自信转身", category: "带领团队", client: "AVON 雅芳" },
-      { id: 7, title: "Marykay x 木兰 新品上市", category: "带领团队", client: "Mary Kay 玫琳凯" },
-      { id: 8, title: "羽西 x 太空创想 跨界整合", category: "带领团队", client: "YUESAI 羽西" },
-      { id: 9, title: "新风至·轻云享", category: "带领团队", client: "PHILIPS 飞利浦空调" },
-      { id: 10, title: "不妥协 更热爱 TVC", category: "带领团队", client: "HIZERO" },
-      { id: 11, title: "Motorcraft 60周年宣言", category: "TVC与宣言", client: "Ford 福特" },
-      { id: 12, title: "光启计划 / 山区点灯", category: "TVC与宣言", client: "中国电信" },
-      { id: 13, title: "IKEA x 中国电信 定制未来家", category: "TVC与宣言", client: "IKEA & 中国电信" },
-      { id: 14, title: "帝王系列 / 净活系列洗衣机", category: "TVC与宣言", client: "Whirlpool 惠而浦" },
-      { id: 15, title: "猛禽计划", category: "主视觉与海报", client: "Ford 福特" },
-      { id: 16, title: "魔洁 M85 龙卷魔力", category: "主视觉与海报", client: "LEXY 莱克" },
-      { id: 17, title: "宴遇中国 (中秋/重阳/百味)", category: "主视觉与海报", client: "SNOW 雪花啤酒" },
-      { id: 18, title: "QX90 破界而生", category: "主视觉与海报", client: "INFINITI 英菲尼迪" },
-      { id: 19, title: "2025 答案之瓶", category: "主视觉与海报", client: "Budweiser 百威" },
-      { id: 20, title: "拜年礼物测一测 / 浓醇时光", category: "主视觉与海报", client: "HERSHEY'S 好时" },
-      { id: 21, title: "为自己打气", category: "主视觉与海报", client: "统一企业" },
-      { id: 22, title: "小金瓶 / 法式护肤", category: "主视觉与海报", client: "NUXE 巴黎欧树" },
-      { id: 23, title: "扫清过敏障碍", category: "主视觉与海报", client: "Clarityne 开瑞坦" },
-      { id: 24, title: "每日续养", category: "主视觉与海报", client: "Centrum 善存" },
-      { id: 25, title: "每一滴的优悦", category: "主视觉与海报", client: "优悦" },
-      { id: 26, title: "极致奢宠之礼", category: "主视觉与海报", client: "Shanghai Vive 双妹" },
-      { id: 27, title: "新素质女生", category: "主视觉与海报", client: "KAGOME 可果美" },
-      { id: 28, title: "Forever Chuck", category: "主视觉与海报", client: "CONVERSE" },
-      { id: 29, title: "品牌视觉大片", category: "主视觉与海报", client: "FLORASIS 花西子" },
-      { id: 30, title: "产品概念视觉", category: "主视觉与海报", client: "Ninebot 九号" },
-      { id: 31, title: "Ultimate Design 视觉探索", category: "主视觉与海报", client: "HUAWEI 华为" },
-      { id: 32, title: "马上有钱 / 马上有财 字体设计", category: "主视觉与海报", client: "Bilibili" },
-      { id: 33, title: "N°5 香水视觉", category: "主视觉与海报", client: "CHANEL" },
-      { id: 34, title: "像素谜案解说 (B站/YouTube)", category: "AIGC作品", client: "洛奇的密室" },
-      { id: 35, title: "拥尸入梦/华裔灭门/致命独白", category: "AIGC作品", client: "洛奇的密室" },
-      { id: 36, title: "Cat & Diamond / Rain & Sheep", category: "AIGC作品", client: "LOKIJIE 锦钰" },
-      { id: 37, title: "水果丛林 / 概念视觉探索", category: "AIGC作品", client: "LOKIJIE 锦钰" },
-      { id: 38, title: "羽西 x 太空创想 联名礼盒", category: "包装设计", client: "YUESAI 羽西" },
-      { id: 39, title: "生命之书 礼盒", category: "包装设计", client: "Boston Scientific 波士顿科学" },
-      { id: 40, title: "Very Rose 护肤礼盒", category: "包装设计", client: "NUXE 巴黎欧树" },
-      { id: 41, title: "Beauty Clinic / Repair Up", category: "包装设计", client: "Avène 雅漾" },
-      { id: 42, title: "颂春丰 茶叶礼盒", category: "包装设计", client: "中茶" },
-      { id: 43, title: "香氛洗护包装", category: "包装设计", client: "PANIER DES SENS" },
-      { id: 44, title: "Form Follows Perfection 礼盒", category: "包装设计", client: "AXOR" },
-      { id: 45, title: "手表定制礼盒", category: "包装设计", client: "PIERRE LANNIER" },
-      { id: 46, title: "沙琪玛 年货礼盒", category: "包装设计", client: "徐记" },
-      { id: 47, title: "旋转机关礼盒", category: "包装设计", client: "KitKat 雀巢" },
-      { id: 48, title: "健能酸奶 (每天润润肺)", category: "包装设计", client: "光明" },
-      { id: 49, title: "创新之路 Journey 陈列", category: "VI与IP陈列", client: "HSBC 汇丰" },
-      { id: 50, title: "领航员阿东/阿金 IP设计", category: "VI与IP陈列", client: "DNAF" },
-      { id: 51, title: "立顿 x LINE FRIENDS 暖萌来袭", category: "VI与IP陈列", client: "Lipton 立顿" },
-      { id: 52, title: "不敢出走 线下陈列", category: "VI与IP陈列", client: "DOUBLEMINT 绿箭" },
-      { id: 53, title: "库尔勒香梨 体验馆设计", category: "VI与IP陈列", client: "品牌方" },
-      { id: 54, title: "迷宫手表定制设计", category: "VI与IP陈列", client: "MARTELL 马爹利" },
-      { id: 55, title: "神奇动物在哪里 定制版", category: "VI与IP陈列", client: "VIVO X21" },
-    ].map((p, i) => ({ ...p, image: i % 2 === 0 ? p_arch : (i % 3 === 0 ? p_art : p_detail) })); // 交叉使用默认占位图，请本地替换
+      // 带领团队
+      { id: 1, title: "天灯的祝福 / 整合营销", category: "带领团队", client: "Banyan Tree 悦榕酒店", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131803525_IMG_00008.jpeg" },
+      { id: 2, title: "不将就是我们的讲究 TVC", category: "带领团队", client: "Ecowater 怡口净水", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131799810_IMG_00009.jpeg" },
+      { id: 3, title: "618 裸眼3D空降美罗城", category: "带领团队", client: "Weber 威焙", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131798993_IMG_00010.jpeg" },
+      { id: 4, title: "东风日产金融 全年案 / 通勤套装", category: "带领团队", client: "DNAF", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131802159_IMG_00011.jpeg" },
+      { id: 5, title: "创造合适 / Mustang 虎虎生威", category: "带领团队", client: "Ford 福特", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131798695_IMG_00013.jpeg" },
+      { id: 6, title: "小黑裙 自信转身", category: "带领团队", client: "AVON 雅芳", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131890793_IMG_00014.jpeg" },
+      { id: 7, title: "Marykay x 木兰 新品上市", category: "带领团队", client: "Mary Kay 玫琳凯", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131806763_IMG_00015.jpeg" },
+      { id: 8, title: "羽西 x 太空创想 跨界整合", category: "带领团队", client: "YUESAI 羽西", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131864321_IMG_00016.jpeg" },
+      { id: 9, title: "新风至·轻云享", category: "带领团队", client: "PHILIPS 飞利浦空调", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131808755_IMG_00017.jpeg" },
+      { id: 10, title: "不妥协 更热爱 TVC", category: "带领团队", client: "HIZERO", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131801788_IMG_00018.jpeg" },
+
+      // TVC与宣言
+      { id: 11, title: "不将就是我们的讲究", category: "TVC与宣言", client: "Ecowater 怡口净水", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131799810_IMG_00009.jpeg" },
+      { id: 12, title: "福宝60周年：因为不合适，所以我们创造合适", category: "TVC与宣言", client: "Ford Motorcraft 福特", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131807246_IMG_00020.jpeg" },
+      { id: 13, title: "不妥协，更热爱", category: "TVC与宣言", client: "HIZERO", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131803895_IMG_00021.jpeg" },
+      { id: 14, title: "新风至·轻云享", category: "TVC与宣言", client: "PHILIPS 飞利浦空调", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131806513_IMG_00022.jpeg" },
+      { id: 15, title: "光启计划 (点灯计划H5)", category: "TVC与宣言", client: "China Telecom 中国电信", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131805598_IMG_00023.jpeg" },
+      { id: 16, title: "优雅的完成每一次转身", category: "TVC与宣言", client: "AVON 雅芳", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131810990_IMG_00024.jpeg" },
+      { id: 17, title: "第一辆车很容易 (病毒视频)", category: "TVC与宣言", client: "DNAF 东风日产汽车金融", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131812333_IMG_00025.jpeg" },
+
+      // 主视觉与海报
+      { id: 18, title: "百威世界杯", category: "主视觉与海报", client: "百威啤酒", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131815884_IMG_00028.jpeg" },
+      { id: 19, title: "Mustang 虎虎生威", category: "主视觉与海报", client: "Ford 福特", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131812573_IMG_00029.jpeg" },
+      { id: 20, title: "新风至·轻云享", category: "主视觉与海报", client: "PHILIPS 飞利浦空调", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131813883_IMG_00030.jpeg" },
+      { id: 21, title: "猛禽计划", category: "主视觉与海报", client: "Shanghai Sπ", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131827110_IMG_00043.jpeg" },
+      { id: 22, title: "惠而浦知道：真·一键启动", category: "主视觉与海报", client: "Whirlpool 惠而浦", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131821619_IMG_00042.jpeg" },
+      { id: 23, title: "浓醇到说不出口 与你分享", category: "主视觉与海报", client: "HERSHEY'S 好时", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131813819_IMG_00034.jpeg" },
+      { id: 24, title: "浓醇时光 与你分享", category: "主视觉与海报", client: "HERSHEY'S 好时", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131830236_IMG_00049.jpeg" },
+      { id: 25, title: "优雅转身", category: "主视觉与海报", client: "AVON", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131918442_IMG_00032.jpeg" },
+      { id: 26, title: "法式护肤 鎏金肌密", category: "主视觉与海报", client: "NUXE 巴黎欧树", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131813342_IMG_00031.jpeg" },
+      { id: 27, title: "离不开的清甜", category: "主视觉与海报", client: "KAGOME 可果美", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131818541_IMG_00033.jpeg" },
+      { id: 28, title: "为你的健康加菜", category: "主视觉与海报", client: "KAGOME 可果美", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131869815_IMG_00041.jpeg" },
+      { id: 29, title: "为自己打气 (气泡+维生素)", category: "主视觉与海报", client: "Uni-President 统一企业", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131869942_IMG_00036.jpeg" },
+      { id: 30, title: "扫清过敏障碍", category: "主视觉与海报", client: "Clarityne 开瑞坦", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131814620_IMG_00037.jpeg" },
+      { id: 31, title: "挑战缺养时刻", category: "主视觉与海报", client: "Centrum 善存", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131816652_IMG_00038.jpeg" },
+      { id: 32, title: "安心喝享健康", category: "主视觉与海报", client: "Ganten 优悦", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131826450_IMG_00039.jpeg" },
+      { id: 33, title: "上海雙妹 (Topawards Asia 2016)", category: "主视觉与海报", client: "SHANGHAI VIVE 雙妹", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131868996_IMG_00040.jpeg" },
+      { id: 34, title: "龙卷魔力 高能洁净 (Magic M85)", category: "主视觉与海报", client: "LEXY 莱克", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131825931_IMG_00044.jpeg" },
+      { id: 35, title: "英菲尼迪 QX90 新生上市 (破界而生)Poster", category: "主视觉与海报", client: "INFINITI", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131824563_IMG_00046.jpeg" },
+
+      // UIUX
+      { id: 36, title: "百威答案之瓶", category: "UIUX", client: "INFINITI (东风日产金融)", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131829910_IMG_00048.jpeg" },
+      { id: 37, title: "好时浓醇剧场", category: "UIUX", client: "HERSHEY'S 好时", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131830236_IMG_00049.jpeg" },
+      { id: 38, title: "英菲尼迪 QX90 新生上市 (破界而生)", category: "UIUX", client: "百威", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131835301_IMG_00047.jpeg" },
+      { id: 39, title: "圣诞与你同在", category: "UIUX", client: "HERSHEY'S 好时", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131836345_IMG_00050.jpeg" },
+
+      // AIGC作品
+      { id: 40, title: "洛奇的密室：AIGC实战自媒体案例", category: "AIGC作品", client: "自持项目 (B站/YouTube/小红书)", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131837188_IMG_00052.jpeg" },
+      { id: 41, title: "Santal 33 丛林秘境", category: "AIGC作品", client: "Le Labo", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131838282_IMG_00054.jpeg" },
+      { id: 42, title: "Anker Prime 极客能量", category: "AIGC作品", client: "Anker 安克", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131886811_IMG_00057.jpeg" },
+      { id: 43, title: "巨无霸", category: "AIGC作品", client: "McDonald's 麦当劳", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131837399_IMG_00058.jpeg" },
+      { id: 44, title: "Forever Chuck 红色派对", category: "AIGC作品", client: "Converse 匡威", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131843043_IMG_00059.jpeg" },
+      { id: 45, title: "麦当劳时尚重构 (MCD Fashion)", category: "AIGC作品", client: "McDonald's 麦当劳", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131845063_IMG_00060.jpeg" },
+      { id: 46, title: "跨界潮流服饰概念", category: "AIGC作品", client: "Budweiser / BYD / Google", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131847470_IMG_00061.jpeg" },
+      { id: 47, title: "九号平衡车未来工业", category: "AIGC作品", client: "Ninebot 九号公司", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131843452_IMG_00062.jpeg" },
+      { id: 48, title: "小米 SU7 疾速美学", category: "AIGC作品", client: "Xiaomi 小米", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131842251_IMG_00063.jpeg" },
+      { id: 49, title: "非凡大师：Ultimate Design", category: "AIGC作品", client: "Huawei 华为", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131885653_IMG_00064.jpeg" },
+      { id: 50, title: "2026 蛇年新春视觉", category: "AIGC作品", client: "新春创意实验", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131847356_IMG_00065.jpeg" },
+      { id: 51, title: "奇幻艺术系列", category: "AIGC作品", client: "Loki Jie 个人实验", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131887676_IMG_00066.jpeg" },
+
+      // 包装设计
+      { id: 52, title: "Starry Starry Box (太空创想礼盒)", category: "包装设计", client: "YUESAI 羽西", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131850666_IMG_00068.jpeg" },
+      { id: 53, title: "REJUVENATE CORDYCEPS Box (时尚礼盒)", category: "包装设计", client: "YUESAI 羽西", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131859190_IMG_00078.jpeg" },
+      { id: 54, title: "生命之书 (LIFE GIFT BOOK)", category: "包装设计", client: "Boston Scientific 波士顿科学", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131850231_IMG_00069.jpeg" },
+      { id: 55, title: "Very Rose 礼盒", category: "包装设计", client: "NUXE", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131846423_IMG_00070.jpeg" },
+      { id: 56, title: "Beauty Clinic 展示设计", category: "包装设计", client: "Avène 雅漾", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773141150221_Gemini_Generated_Image_ep9pm8ep9pm8ep9p_upscayl_2x_ultrasharp.jpg" },
+      { id: 57, title: "颂春丰 礼盒", category: "包装设计", client: "中茶", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773141169081_Gemini_Generated_Image_b0abuub0abuub0ab_upscayl_2x_ultrasharp.jpg" },
+      { id: 58, title: "沙琪玛礼盒 (美味值千金)", category: "包装设计", client: "Hsu Fu Chi 徐記", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773141146901_Gemini_Generated_Image_7c7jra7c7jra7c7j_upscayl_2x_ultrasharp.jpg" },
+      { id: 59, title: "2025 Snake Year (蛇年限定)", category: "包装设计", client: "KitKat", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773141186280_Gemini_Generated_Image_y8cpooy8cpooy8cp_upscayl_2x_ultrasharp.jpg" },
+
+      // VI & IP 生动化陈列
+      { id: 60, title: "创新之路 (The Journey to Innovation)", category: "VI & IP 生动化陈列", client: "HSBC 汇丰银行", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131864073_IMG_00088.jpeg" },
+      { id: 61, title: "梦想领航员：阿东 & 阿金", category: "VI & IP 生动化陈列", client: "DNAF 东风日产汽车金融", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131864379_IMG_00089.jpeg" },
+      { id: 62, title: "暖萌来袭 (Line Friends 合作款)", category: "VI & IP 生动化陈列", client: "Lipton 立顿", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131867018_IMG_00090.jpeg" },
+      { id: 63, title: "轻养每一刻 (蜂蜜柚子)", category: "VI & IP 生动化陈列", client: "Master Kong 康师傅", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131861597_IMG_00091.jpeg" },
+      { id: 64, title: "电影联合推广 IP 手机设计", category: "VI & IP 生动化陈列", client: "vivo", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131904243_IMG_00094.jpeg" },
+    ];
 
     // --- 核心 Hook：Lenis 丝滑滚动 ---
     const useSmoothScroll = () => {
@@ -199,43 +203,30 @@
       }, []);
     };
 
-    // --- 核心 Hook：GSAP 动画 (GIA风格视差与遮罩) ---
+    // --- 核心 Hook：GSAP 动画 (包含多图片的视差支持) ---
     const useGsapAnimations = (dependency) => {
       useLayoutEffect(() => {
         gsap.registerPlugin(ScrollTrigger);
         let ctx = gsap.context(() => {
           
-          // 1. 文字遮罩升起动画
           gsap.utils.toArray('.mask-text-inner').forEach(text => {
             gsap.to(text, {
-              y: "0%",
-              ease: "power4.out",
-              duration: 1.5,
-              stagger: 0.1,
-              scrollTrigger: {
-                trigger: text.closest('.mask-text-container'),
-                start: "top 85%",
-              }
+              y: "0%", ease: "power4.out", duration: 1.5, stagger: 0.1,
+              scrollTrigger: { trigger: text.closest('.mask-text-container'), start: "top 85%" }
             });
           });
 
-          // 2. GIA风格 图片视差动画 (Parallax)
           gsap.utils.toArray('.parallax-container').forEach(container => {
-            const img = container.querySelector('img');
-            gsap.to(img, {
-              yPercent: 15,
-              ease: "none",
-              scrollTrigger: {
-                trigger: container,
-                start: "top bottom",
-                end: "bottom top",
-                scrub: true
-              }
-            });
+            const imgs = container.querySelectorAll('img');
+            if(imgs.length > 0) {
+               gsap.to(imgs, {
+                 yPercent: 15, ease: "none",
+                 scrollTrigger: { trigger: container, start: "top bottom", end: "bottom top", scrub: true }
+               });
+            }
           });
 
-          // 3. 项目卡片渐显动画
-          gsap.utils.toArray('.project-card').forEach((card, i) => {
+          gsap.utils.toArray('.project-card').forEach((card) => {
             gsap.fromTo(card, 
               { opacity: 0, y: 50 },
               { opacity: 1, y: 0, duration: 1.2, ease: "power3.out", scrollTrigger: { trigger: card, start: "top 85%" } }
@@ -268,14 +259,23 @@
       
       const [isDarkMode, setIsDarkMode] = useState(false); 
       const cursor = useCustomCursor();
+      
+      // 首屏巨幕轮播状态
+      const [heroIdx, setHeroIdx] = useState(0);
 
+      // HTML 黑暗模式同步
       useEffect(() => {
-        if (isDarkMode) {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
+        if (isDarkMode) document.documentElement.classList.add('dark');
+        else document.documentElement.classList.remove('dark');
       }, [isDarkMode]);
+
+      // 巨幕轮播定时器 (每 5 秒切换一次)
+      useEffect(() => {
+        const timer = setInterval(() => {
+          setHeroIdx(prev => (prev + 1) % HERO_SLIDER_IMAGES.length);
+        }, 5000);
+        return () => clearInterval(timer);
+      }, []);
 
       const [user, setUser] = useState(null);
       const [customProjects, setCustomProjects] = useState([]);
@@ -284,11 +284,9 @@
       const [viewState, setViewState] = useState("portfolio"); 
       const [passwordInput, setPasswordInput] = useState("");
       
-      // Admin 编辑状态
       const [editingId, setEditingId] = useState(null);
       const [newProject, setNewProject] = useState({ title: "", client: "", category: CATEGORIES[1], image: "" });
 
-      // Firebase 数据监听
       useEffect(() => {
         if (!auth) return;
         const unsubscribe = auth.onAuthStateChanged((u) => { if(u) setUser(u); else auth.signInAnonymously(); });
@@ -306,29 +304,23 @@
         return () => unsubscribe();
       }, [user]);
 
-      // --- 数据智能合并机制 (处理云端修改、删除与初始数据的冲突) ---
       const deletedIds = new Set(customProjects.filter(p => p._deleted).map(p => p.id));
       const validCustomProjects = customProjects.filter(p => !p._deleted);
       const validCustomIds = new Set(validCustomProjects.map(p => p.id));
       
-      // 如果一个初始项目被修改（在 customProjects 存在同 ID），或者被软删除（_deleted: true），就从默认列表中隐藏它
       const activeInitial = INITIAL_PROJECTS.filter(p => !validCustomIds.has(p.id) && !deletedIds.has(p.id));
       const currentProjects = [...validCustomProjects, ...activeInitial];
-
       const filteredProjects = activeCategory === "All" ? currentProjects : currentProjects.filter(p => p.category === activeCategory);
 
       useGsapAnimations(activeCategory);
 
-      // 交互控制
       const onHover = (text) => { cursor.setIsHovering(true); cursor.setHoverText(text); };
       const onLeave = () => { cursor.setIsHovering(false); cursor.setHoverText(""); };
       const openLightbox = (img) => { setLightboxImage(img); document.body.style.overflow = 'hidden'; onHover("Close"); };
       const closeLightbox = () => { setLightboxImage(null); document.body.style.overflow = 'auto'; onLeave(); };
 
-      // 后台逻辑
       const handleLogin = (e) => { e.preventDefault(); if(passwordInput === "loki2026") { setViewState("admin"); setPasswordInput(""); } else alert("密码错误"); };
       
-      // 保存或更新作品
       const handleSaveProject = async (e) => {
         e.preventDefault();
         if (!newProject.title || !newProject.image) return alert("标题和图片链接是必填项！");
@@ -337,7 +329,6 @@
         const p = { ...newProject, id: targetId };
         
         if (!user || !db) {
-          // 本地无后端测试兼容
           setCustomProjects([p, ...customProjects.filter(c => c.id !== targetId)]);
           alert(editingId ? "本地测试：修改成功！" : "本地测试：发布成功！");
           setNewProject({ title: "", client: "", category: CATEGORIES[1], image: "" });
@@ -355,36 +346,24 @@
         }
       };
 
-      // 取消编辑
       const cancelEdit = () => {
         setEditingId(null);
         setNewProject({ title: "", client: "", category: CATEGORIES[1], image: "" });
       };
 
-      // 删除作品 (软删除覆盖机制)
       const handleDelete = async (id) => {
         if(!window.confirm("确认删除？删除后无法恢复。")) return;
-        
-        if(!db) {
-          setCustomProjects([...customProjects, { id, _deleted: true }]);
-          return;
-        }
+        if(!db) { setCustomProjects([...customProjects, { id, _deleted: true }]); return; }
         
         try {
           const isInitial = INITIAL_PROJECTS.some(p => p.id === id);
-          if (isInitial) {
-             // 如果删除的是自带作品，我们在云端标记它为已删除（覆盖）
-             await db.collection('projects').doc(id.toString()).set({ id, _deleted: true });
-          } else {
-             // 删除的是云端作品，直接移除文档
-             await db.collection('projects').doc(id.toString()).delete();
-          }
+          if (isInitial) await db.collection('projects').doc(id.toString()).set({ id, _deleted: true });
+          else await db.collection('projects').doc(id.toString()).delete();
         } catch (err) {
           alert("删除失败: " + err.message);
         }
       }
 
-      // --- Admin View ---
       if (viewState === "login" || viewState === "admin") {
          return (
           <div className="min-h-screen bg-gia-darkBg text-gia-bg font-sans flex flex-col items-center justify-center p-8">
@@ -405,7 +384,6 @@
                   <button onClick={() => setViewState("portfolio")} className="text-xs tracking-widest uppercase flex items-center gap-2 hover:text-gia-accent transition"><IconArrowLeft className="w-4 h-4"/> Exit CMS</button>
                 </div>
                 
-                {/* 动态表单 (新增 / 修改) */}
                 <div className="bg-white/5 p-8 md:p-12 rounded-xl transition-all duration-300">
                   <h2 className="text-xl tracking-widest uppercase mb-8 flex items-center gap-3 font-sans font-bold text-white">
                     {editingId ? <IconEdit className="w-5 h-5 text-blue-400" /> : <IconPlus className="w-5 h-5 text-green-400" />}
@@ -430,7 +408,6 @@
                   </form>
                 </div>
                 
-                {/* 涵盖全量项目管理的列表 */}
                 {currentProjects.length > 0 && (
                   <div className="mt-12 flex flex-col gap-4 animate-in fade-in duration-500">
                     <h2 className="text-lg tracking-widest uppercase mb-4 flex items-center gap-3 font-sans font-bold text-gia-accent">All Projects ({currentProjects.length})</h2>
@@ -444,22 +421,8 @@
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <button 
-                            onClick={() => {
-                              setEditingId(p.id);
-                              setNewProject({ title: p.title, client: p.client || "", category: p.category, image: p.image });
-                              window.scrollTo({ top: 0, behavior: 'smooth' });
-                            }} 
-                            className="p-3 text-blue-400 hover:bg-blue-400/10 rounded-full transition-colors" title="Edit"
-                          >
-                            <IconEdit className="w-5 h-5"/>
-                          </button>
-                          <button 
-                            onClick={()=>handleDelete(p.id)} 
-                            className="p-3 text-red-400 hover:bg-red-400/10 rounded-full transition-colors" title="Delete"
-                          >
-                            <IconTrash className="w-5 h-5"/>
-                          </button>
+                          <button onClick={() => { setEditingId(p.id); setNewProject({ title: p.title, client: p.client || "", category: p.category, image: p.image }); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="p-3 text-blue-400 hover:bg-blue-400/10 rounded-full transition-colors" title="Edit"><IconEdit className="w-5 h-5"/></button>
+                          <button onClick={()=>handleDelete(p.id)} className="p-3 text-red-400 hover:bg-red-400/10 rounded-full transition-colors" title="Delete"><IconTrash className="w-5 h-5"/></button>
                         </div>
                       </div>
                     ))}
@@ -471,17 +434,13 @@
          );
       }
 
-      // --- Main Portfolio View (GIA Inspired) ---
       return (
         <div className={`${isDarkMode ? 'dark' : ''} ${lightboxImage ? '' : 'cursor-none'}`}>
           <div className="min-h-screen relative">
-            
-            {/* 流体光标 (GIA 风格) */}
             <div className={`fixed top-0 left-0 pointer-events-none z-[9999] hidden md:flex items-center justify-center rounded-full transition-all duration-300 ease-out mix-blend-difference ${cursor.isHovering ? 'w-24 h-24 bg-white' : 'w-4 h-4 bg-white'} ${cursor.isLightbox ? 'mix-blend-normal bg-gia-bg' : ''}`} style={{transform: `translate3d(${cursor.pos.x}px, ${cursor.pos.y}px, 0) translate(-50%, -50%)`}}>
               {cursor.isHovering && <span className={`text-[10px] font-bold tracking-widest uppercase opacity-100 transition-opacity duration-300 ${cursor.isLightbox ? 'text-black' : 'text-black'}`}>{cursor.hoverText}</span>}
             </div>
 
-            {/* 巨幅全屏灯箱 */}
             {lightboxImage && (
               <div className="fixed inset-0 z-[500] bg-gia-darkBg/95 backdrop-blur-xl flex items-center justify-center p-4 md:p-12 animate-in fade-in duration-500" onClick={closeLightbox}>
                 <button className="absolute top-8 right-8 text-white md:hidden z-[501]" onClick={closeLightbox}><IconX className="w-8 h-8" /></button>
@@ -489,7 +448,6 @@
               </div>
             )}
 
-            {/* 导航栏 (极简社论风) */}
             <nav className="fixed top-0 w-full p-6 md:px-12 md:py-10 flex justify-between items-center z-50 mix-blend-difference text-white">
               <div className="text-xl font-serif italic tracking-wide">Loki Wang.</div>
               <div className="flex items-center gap-8">
@@ -500,32 +458,30 @@
               </div>
             </nav>
 
-            {/* 巨幕 Hero Section (GIA Style Parallax Image & Typography) */}
-            <header className="w-full h-screen relative flex items-center justify-center overflow-hidden parallax-container">
-              {/* 核心视差背景图 */}
+            <header className="w-full h-screen relative flex items-center justify-center overflow-hidden parallax-container bg-black">
               <div className="absolute inset-0 w-full h-[120%] -top-[10%]">
-                <img src={HERO_PROJECTS[0].image} className="w-full h-full object-cover opacity-90 dark:opacity-70 filter brightness-[0.85] contrast-[1.1]" />
+                {HERO_SLIDER_IMAGES.map((src, idx) => (
+                  <img 
+                    key={src}
+                    src={src} 
+                    className={`absolute inset-0 w-full h-full object-cover filter brightness-[0.7] contrast-[1.1] transition-opacity duration-[2000ms] ease-in-out ${idx === heroIdx ? 'opacity-100 z-10' : 'opacity-0 z-0'}`} 
+                  />
+                ))}
               </div>
-              
-              {/* 遮罩巨字 (GSAP Mask Reveal) */}
-              <div className="relative z-10 text-center text-white mix-blend-overlay mask-text-container w-full px-4">
-                <div className="mask-text"><h1 className="mask-text-inner text-[18vw] md:text-[12vw] font-serif italic leading-[0.8] tracking-tighter">Strategy.</h1></div><br/>
-                <div className="mask-text"><h1 className="mask-text-inner text-[18vw] md:text-[12vw] font-serif leading-[0.8] tracking-tighter ml-[10vw]">Insight.</h1></div><br/>
-                <div className="mask-text"><h1 className="mask-text-inner text-[18vw] md:text-[12vw] font-serif italic leading-[0.8] tracking-tighter mr-[15vw]">Creative.</h1></div>
+              <div className="relative z-10 text-center text-white mix-blend-overlay mask-text-container w-full px-4 pointer-events-none">
+                <div className="mask-text"><h1 className="mask-text-inner text-[18vw] md:text-[12vw] font-serif italic leading-[0.8] tracking-tighter drop-shadow-lg">Strategy.</h1></div><br/>
+                <div className="mask-text"><h1 className="mask-text-inner text-[18vw] md:text-[12vw] font-serif leading-[0.8] tracking-tighter ml-[10vw] drop-shadow-lg">Insight.</h1></div><br/>
+                <div className="mask-text"><h1 className="mask-text-inner text-[18vw] md:text-[12vw] font-serif italic leading-[0.8] tracking-tighter mr-[15vw] drop-shadow-lg">Creative.</h1></div>
               </div>
-
-              {/* 极简向下滚动提示 */}
               <div className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white flex flex-col items-center gap-4 mask-text-container">
-                <div className="mask-text"><span className="mask-text-inner text-[9px] uppercase tracking-[0.3em] opacity-70">Scroll to explore</span></div>
-                <div className="w-[1px] h-12 bg-white/30 overflow-hidden relative">
+                <div className="mask-text"><span className="mask-text-inner text-[9px] uppercase tracking-[0.3em] opacity-90 drop-shadow-md">Scroll to explore</span></div>
+                <div className="w-[1px] h-12 bg-white/30 overflow-hidden relative shadow-lg">
                   <div className="w-full h-full bg-white absolute top-0 -translate-y-full animate-[scrolldown_2s_ease-in-out_infinite]"></div>
                 </div>
               </div>
             </header>
 
             <main className="px-4 md:px-12 pt-32 pb-32 max-w-[1600px] mx-auto">
-              
-              {/* 哲学/简介区 (GIA Style Editorial Intro) */}
               <section className="pb-32 md:pb-48 grid grid-cols-1 md:grid-cols-12 gap-12 mask-text-container">
                 <div className="md:col-span-4">
                   <div className="mask-text"><h2 className="mask-text-inner text-xs uppercase tracking-[0.2em] text-gia-accent font-sans">Philosophy</h2></div>
@@ -546,8 +502,8 @@
                 </div>
               </section>
 
-              {/* 吸顶导航避开顶部固定栏遮挡 */}
-              <div className="sticky top-[80px] md:top-[110px] z-40 bg-gia-bg/90 dark:bg-gia-darkBg/90 backdrop-blur-xl py-6 border-b border-gia-text/10 dark:border-gia-darkText/10 mb-20 flex overflow-x-auto hide-scrollbar gap-8 md:gap-12 transition-colors duration-700 -mx-4 px-4 md:mx-0 md:px-0">
+              {/* 修复 1：利用 pt 和 -mt 抵消，使得吸顶时背景能填满顶部缝隙，同时避开顶部固定导航栏的遮挡 */}
+              <div className="sticky top-0 z-40 bg-gia-bg/90 dark:bg-gia-darkBg/90 backdrop-blur-xl pt-[80px] md:pt-[110px] -mt-[80px] md:-mt-[110px] pb-6 border-b border-gia-text/10 dark:border-gia-darkText/10 mb-20 flex overflow-x-auto hide-scrollbar gap-8 md:gap-12 transition-colors duration-700 -mx-4 px-4 md:mx-0 md:px-0">
                 {CATEGORIES.map((cat) => (
                   <button key={cat} onClick={() => setActiveCategory(cat)} onMouseEnter={() => onHover("Filter")} onMouseLeave={onLeave} className={`text-xs font-sans tracking-[0.15em] uppercase whitespace-nowrap transition-all duration-300 ${activeCategory === cat ? 'text-gia-text dark:text-white border-b border-gia-text dark:border-white pb-1' : 'text-gia-accent hover:text-gia-text dark:hover:text-white'} ${!lightboxImage ? 'cursor-none' : ''}`}>
                     {cat}
@@ -555,27 +511,24 @@
                 ))}
               </div>
 
-              {/* 作品画廊 (宽屏 aspect-video 16:9 比例) */}
               <section className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-24 md:gap-y-32" key={activeCategory}>
                 {filteredProjects.map((project, index) => {
                   const isEven = index % 2 !== 0;
                   return (
                     <div key={project.id} className={`project-card group flex flex-col ${isEven ? 'md:mt-32' : ''}`}>
-                      
-                      <div className="w-full overflow-hidden relative bg-gray-200 dark:bg-gray-800 parallax-container aspect-video" onClick={() => openLightbox(project.image)} onMouseEnter={() => onHover("View")} onMouseLeave={onLeave}>
+                      <div className="w-full overflow-hidden relative bg-gray-200 dark:bg-gray-800 parallax-container aspect-video cursor-none" onClick={() => openLightbox(project.image)} onMouseEnter={() => onHover("View")} onMouseLeave={onLeave}>
                         <div className="absolute inset-0 w-full h-[120%] -top-[10%]">
                            <img src={project.image} alt={project.title} className="w-full h-full object-cover transition-transform duration-[2s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.03]" loading="lazy" />
                         </div>
                         <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                       </div>
-
                       <div className="mt-8 flex flex-col gap-3">
                         <div className="flex items-center gap-4 text-[10px] uppercase tracking-[0.2em] text-gia-accent font-sans">
                           <span>{project.category}</span>
                           <span className="w-4 h-[1px] bg-gia-accent/50"></span>
                           <span>{project.client}</span>
                         </div>
-                        <h3 className="text-3xl md:text-4xl font-serif italic tracking-tight text-gia-text dark:text-gia-darkText group-hover:text-gia-accent transition-colors duration-500">
+                        <h3 className="text-2xl md:text-3xl lg:text-4xl font-serif italic tracking-tight text-gia-text dark:text-gia-darkText group-hover:text-gia-accent transition-colors duration-500 pr-4">
                           {project.title}
                         </h3>
                       </div>
@@ -587,10 +540,8 @@
               {filteredProjects.length === 0 && <div className="py-40 text-center text-gia-accent text-xs tracking-widest uppercase">Updating soon...</div>}
             </main>
 
-            {/* 巨型 Footer (GIA Style CTA) */}
             <footer className="bg-gia-text dark:bg-[#050505] text-gia-bg px-4 md:px-12 pt-32 pb-12 flex flex-col justify-between min-h-[90vh] relative z-10 transition-colors duration-1000">
               <div className="max-w-[1600px] mx-auto w-full flex flex-col h-full justify-between mask-text-container">
-                
                 <div>
                   <div className="mask-text mb-16">
                     <div className="mask-text-inner flex items-center gap-3">
@@ -598,20 +549,17 @@
                       <span className="text-[10px] font-sans tracking-[0.2em] uppercase text-white/60">Currently accepting selected projects</span>
                     </div>
                   </div>
-
                   <div className="mask-text">
                     <h2 className="mask-text-inner text-5xl md:text-7xl lg:text-[8vw] font-serif leading-[0.9] tracking-tighter mb-12">
                       Ready to craft <br/><span className="italic text-white/50">the next benchmark?</span>
                     </h2>
                   </div>
                 </div>
-
                 <div className="mt-auto mask-text">
                   <a href="mailto:pxnjack@gmail.com?subject=Project%20Inquiry" className={`mask-text-inner group inline-flex items-center gap-6 text-3xl md:text-5xl font-serif italic text-white hover:text-white/60 transition-colors pb-4 border-b border-white/20 hover:border-white/60 ${!lightboxImage ? 'cursor-none' : ''}`} onMouseEnter={() => onHover("Say Hi")} onMouseLeave={onLeave}>
                     <span>pxnjack@gmail.com</span><IconArrowUpRight className="w-8 h-8 md:w-12 md:h-12 group-hover:rotate-45 group-hover:translate-x-2 transition-transform duration-500" />
                   </a>
                 </div>
-
                 <div className="mt-24 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-start md:items-end gap-8 text-[10px] font-sans tracking-[0.2em] uppercase text-white/50">
                   <div className="flex flex-col md:flex-row gap-6 md:gap-12">
                      <span className={`hover:text-white transition-colors ${!lightboxImage ? 'cursor-none' : ''}`} onMouseEnter={() => onHover("Copy")} onMouseLeave={onLeave}>WeChat: Lokipxn</span>
@@ -625,7 +573,6 @@
               </div>
             </footer>
           </div>
-
           <style dangerouslySetInnerHTML={{__html: `
             @keyframes scrolldown {
               0% { transform: translateY(-100%); }
