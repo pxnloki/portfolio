@@ -86,8 +86,8 @@
     const IconEdit = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>;
     const IconPlus = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 5v14M5 12h14"/></svg>;
 
-    // 动态更新分类
-    const CATEGORIES = ["All", "AIGC作品", "UI&UX", "TVC与宣言", "主视觉与海报", "VI & IP 生动化陈列", "包装设计"];
+    // 动态更新分类，加入了 UI&UX 
+    const CATEGORIES = ["ALL", "AIGC作品", "UI&UX", "TVC与宣言", "主视觉与海报", "VI & IP 生动化陈列", "包装设计"];
     
     // --- 首屏循环播放的巨幕图片 ---
     const HERO_SLIDER_IMAGES = [
@@ -99,18 +99,6 @@
 
     // --- 完整作品库 (全面替换为你提供的最新大纲内容) ---
     const INITIAL_PROJECTS = [
-      // 带领团队
-      { id: 1, title: "天灯的祝福 / 整合营销", category: "带领团队", client: "Banyan Tree 悦榕酒店", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131803525_IMG_00008.jpeg" },
-      { id: 2, title: "不将就是我们的讲究 TVC", category: "带领团队", client: "Ecowater 怡口净水", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131799810_IMG_00009.jpeg" },
-      { id: 3, title: "618 裸眼3D空降美罗城", category: "带领团队", client: "Weber 威焙", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131798993_IMG_00010.jpeg" },
-      { id: 4, title: "东风日产金融 全年案 / 通勤套装", category: "带领团队", client: "DNAF", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131802159_IMG_00011.jpeg" },
-      { id: 5, title: "创造合适 / Mustang 虎虎生威", category: "带领团队", client: "Ford 福特", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131798695_IMG_00013.jpeg" },
-      { id: 6, title: "小黑裙 自信转身", category: "带领团队", client: "AVON 雅芳", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131890793_IMG_00014.jpeg" },
-      { id: 7, title: "Marykay x 木兰 新品上市", category: "带领团队", client: "Mary Kay 玫琳凯", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131806763_IMG_00015.jpeg" },
-      { id: 8, title: "羽西 x 太空创想 跨界整合", category: "带领团队", client: "YUESAI 羽西", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131864321_IMG_00016.jpeg" },
-      { id: 9, title: "新风至·轻云享", category: "带领团队", client: "PHILIPS 飞利浦空调", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131808755_IMG_00017.jpeg" },
-      { id: 10, title: "不妥协 更热爱 TVC", category: "带领团队", client: "HIZERO", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131801788_IMG_00018.jpeg" },
-
       // AIGC作品
       { id: 11, title: "洛奇的密室：AIGC实战自媒体案例", category: "AIGC作品", client: "自持项目 (B站/YouTube/小红书)", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773738495320_IMG_00052.jpeg" },
       { id: 12, title: "百威世界杯", category: "AIGC作品", client: "百威啤酒", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378288202_IMG_00028.jpeg" },
@@ -288,7 +276,7 @@
 
       const [user, setUser] = useState(null);
       const [customProjects, setCustomProjects] = useState([]);
-      const [activeCategory, setActiveCategory] = useState("All");
+      const [activeCategory, setActiveCategory] = useState("ALL");
       const [lightboxImage, setLightboxImage] = useState(null);
       const [viewState, setViewState] = useState("portfolio"); 
       const [passwordInput, setPasswordInput] = useState("");
@@ -319,7 +307,7 @@
       
       const activeInitial = INITIAL_PROJECTS.filter(p => !validCustomIds.has(p.id) && !deletedIds.has(p.id));
       const currentProjects = [...validCustomProjects, ...activeInitial];
-      const filteredProjects = activeCategory === "All" ? currentProjects : currentProjects.filter(p => p.category === activeCategory);
+      const filteredProjects = activeCategory === "ALL" ? currentProjects : currentProjects.filter(p => p.category === activeCategory);
 
       useGsapAnimations(activeCategory);
 
@@ -401,7 +389,7 @@
                   <form onSubmit={handleSaveProject} className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="flex flex-col gap-2"><label className="text-xs uppercase tracking-widest text-gia-accent">Title</label><input type="text" value={newProject.title} onChange={e=>setNewProject({...newProject,title:e.target.value})} className="bg-transparent border-b border-white/20 py-2 outline-none focus:border-white" required/></div>
                     <div className="flex flex-col gap-2"><label className="text-xs uppercase tracking-widest text-gia-accent">Client</label><input type="text" value={newProject.client} onChange={e=>setNewProject({...newProject,client:e.target.value})} className="bg-transparent border-b border-white/20 py-2 outline-none focus:border-white"/></div>
-                    <div className="flex flex-col gap-2"><label className="text-xs uppercase tracking-widest text-gia-accent">Category</label><select value={newProject.category} onChange={e=>setNewProject({...newProject,category:e.target.value})} className="bg-[#222] border-b border-white/20 py-2 outline-none">{CATEGORIES.filter(c=>c!=="All").map(c=><option key={c}>{c}</option>)}</select></div>
+                    <div className="flex flex-col gap-2"><label className="text-xs uppercase tracking-widest text-gia-accent">Category</label><select value={newProject.category} onChange={e=>setNewProject({...newProject,category:e.target.value})} className="bg-[#222] border-b border-white/20 py-2 outline-none">{CATEGORIES.filter(c=>c!=="ALL").map(c=><option key={c}>{c}</option>)}</select></div>
                     <div className="flex flex-col gap-2"><label className="text-xs uppercase tracking-widest text-gia-accent">Image URL (16:9)</label><input type="url" value={newProject.image} onChange={e=>setNewProject({...newProject,image:e.target.value})} className="bg-transparent border-b border-white/20 py-2 outline-none focus:border-white" required/></div>
                     
                     <div className="md:col-span-2 mt-4 flex flex-col md:flex-row gap-4">
