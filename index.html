@@ -86,16 +86,15 @@
     const IconEdit = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>;
     const IconPlus = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 5v14M5 12h14"/></svg>;
 
-    // 动态更新分类，加入了 UIUX 并修正了 VI 陈列的名字
-    const CATEGORIES = ["All", "带领团队", "TVC与宣言", "主视觉与海报", "UIUX", "AIGC作品", "包装设计", "VI & IP 生动化陈列"];
+    // 动态更新分类
+    const CATEGORIES = ["All", "AIGC作品", "UI&UX", "TVC与宣言", "主视觉与海报", "VI & IP 生动化陈列", "包装设计"];
     
     // --- 首屏循环播放的巨幕图片 ---
     const HERO_SLIDER_IMAGES = [
-      "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131838282_IMG_00054.jpeg",
-      "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131882115_IMG_00056.jpeg",
-      "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131886811_IMG_00057.jpeg",
-      "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131837399_IMG_00058.jpeg",
-      "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131812573_IMG_00029.jpeg"
+      "https://cloudflare-imgbed-90g.pages.dev/file/img/1773738487722_IMG_00054.jpeg",
+      "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378325267_IMG_00055.jpeg",
+      "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378321832_IMG_00058.jpeg",
+      "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378320522_IMG_00057.jpeg"
     ];
 
     // --- 完整作品库 (全面替换为你提供的最新大纲内容) ---
@@ -112,71 +111,81 @@
       { id: 9, title: "新风至·轻云享", category: "带领团队", client: "PHILIPS 飞利浦空调", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131808755_IMG_00017.jpeg" },
       { id: 10, title: "不妥协 更热爱 TVC", category: "带领团队", client: "HIZERO", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131801788_IMG_00018.jpeg" },
 
+      // AIGC作品
+      { id: 11, title: "洛奇的密室：AIGC实战自媒体案例", category: "AIGC作品", client: "自持项目 (B站/YouTube/小红书)", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773738495320_IMG_00052.jpeg" },
+      { id: 12, title: "百威世界杯", category: "AIGC作品", client: "百威啤酒", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378288202_IMG_00028.jpeg" },
+      { id: 13, title: "Santal 33 丛林秘境", category: "AIGC作品", client: "Le Labo (香氛概念)", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773738487722_IMG_00054.jpeg" },
+      { id: 14, title: "Anker Prime 极客能量", category: "AIGC作品", client: "Anker 安克", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378320522_IMG_00057.jpeg" },
+      { id: 15, title: "巨无霸", category: "AIGC作品", client: "McDonald's 麦当劳", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378321832_IMG_00058.jpeg" },
+      { id: 16, title: "Forever Chuck 红色派对", category: "AIGC作品", client: "Converse 匡威", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378324689_IMG_00059.jpeg" },
+      { id: 17, title: "麦当劳时尚重构 (MCD Fashion)", category: "AIGC作品", client: "McDonald's 麦当劳", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378327957_IMG_00060.jpeg" },
+      { id: 18, title: "跨界潮流服饰概念", category: "AIGC作品", client: "Budweiser / BYD (比亚迪) / Google", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378333231_IMG_00061.jpeg" },
+      { id: 19, title: "九号平衡车未来工业", category: "AIGC作品", client: "Ninebot 九号公司", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378343488_IMG_00062.jpeg" },
+      { id: 20, title: "小米 SU7 疾速美学", category: "AIGC作品", client: "Xiaomi 小米", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378321149_IMG_00063.jpeg" },
+      { id: 21, title: "非凡大师：Ultimate Design", category: "AIGC作品", client: "Huawei 华为", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378323331_IMG_00064.jpeg" },
+      { id: 22, title: "2026 蛇年新春视觉 (马上有财/立马有钱)", category: "AIGC作品", client: "新春创意实验", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378326846_IMG_00065.jpeg" },
+      { id: 23, title: "IWatch无惧暴雨 (马上有财/立马有钱)", category: "AIGC作品", client: "Apple", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378330084_IMG_00056.jpeg" },
+      { id: 24, title: "奇幻艺术系列 (Cat & Diamond / Rain & Sheep)", category: "AIGC作品", client: "Loki Jie 个人实验", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378337879_IMG_00066.jpeg" },
+
+      // UI&UX
+      { id: 25, title: "光启计划 (点灯计划H5)", category: "UI&UX", client: "China Telecom 中国电信", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378253421_IMG_00023.jpeg" },
+      { id: 26, title: "东风日产金融-破局者", category: "UI&UX", client: "东风日产金融", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773740577405_Page11.jpg" },
+      { id: 27, title: "优雅的完成每一次转身", category: "UI&UX", client: "AVON 雅芳", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773740572428_Page13.jpg" },
+      { id: 28, title: "侏罗纪奔跑", category: "UI&UX", client: "侏罗纪公园联合推广", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773740566099_Page28.jpg" },
+      { id: 29, title: "定制未来家", category: "UI&UX", client: "中国电信", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773740573328_Page17.jpg" },
+      { id: 30, title: "百威答案之瓶", category: "UI&UX", client: "百威", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773738305920_IMG_00048.jpeg" },
+      { id: 31, title: "好时浓醇剧场", category: "UI&UX", client: "HERSHEY'S 好时", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773738309330_IMG_00049.jpeg" },
+      { id: 32, title: "好时浓醇女孩", category: "UI&UX", client: "HERSHEY'S 好时", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773740564453_Page76.jpg" },
+      { id: 33, title: "英菲尼迪 QX90 新生上市 (破界而生)", category: "UI&UX", client: "INFINITI", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773738307830_IMG_00047.jpeg" },
+      { id: 34, title: "圣诞与你同在", category: "UI&UX", client: "HERSHEY'S 好时", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773738309988_IMG_00050.jpeg" },
+
       // TVC与宣言
-      { id: 11, title: "不将就是我们的讲究", category: "TVC与宣言", client: "Ecowater 怡口净水", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131799810_IMG_00009.jpeg" },
-      { id: 12, title: "福宝60周年：因为不合适，所以我们创造合适", category: "TVC与宣言", client: "Ford Motorcraft 福特", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131807246_IMG_00020.jpeg" },
-      { id: 13, title: "不妥协，更热爱", category: "TVC与宣言", client: "HIZERO", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131803895_IMG_00021.jpeg" },
-      { id: 14, title: "新风至·轻云享", category: "TVC与宣言", client: "PHILIPS 飞利浦空调", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131806513_IMG_00022.jpeg" },
-      { id: 15, title: "光启计划 (点灯计划H5)", category: "TVC与宣言", client: "China Telecom 中国电信", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131805598_IMG_00023.jpeg" },
-      { id: 16, title: "优雅的完成每一次转身", category: "TVC与宣言", client: "AVON 雅芳", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131810990_IMG_00024.jpeg" },
-      { id: 17, title: "第一辆车很容易 (病毒视频)", category: "TVC与宣言", client: "DNAF 东风日产汽车金融", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131812333_IMG_00025.jpeg" },
+      { id: 35, title: "不将就是我们的讲究", category: "TVC与宣言", client: "Ecowater 怡口净水", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378247537_IMG_00009.jpeg" },
+      { id: 36, title: "福宝60周年：因为不合适，所以我们创造合适", category: "TVC与宣言", client: "Ford Motorcraft 福特", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378249563_IMG_00013.jpeg" },
+      { id: 37, title: "不妥协，更热爱", category: "TVC与宣言", client: "HIZERO", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378255643_IMG_00021.jpeg" },
+      { id: 38, title: "新风至·轻云享", category: "TVC与宣言", client: "PHILIPS 飞利浦空调", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378278971_IMG_00022.jpeg" },
+      { id: 39, title: "光启计划 (点灯计划H5)", category: "TVC与宣言", client: "China Telecom 中国电信", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378253421_IMG_00023.jpeg" },
+      { id: 40, title: "优雅的完成每一次转身", category: "TVC与宣言", client: "AVON 雅芳", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378275827_IMG_00024.jpeg" },
+      { id: 41, title: "东风日产金融-破局者", category: "TVC与宣言", client: "东风日产金融", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773740555340_Page10.jpg" },
+      { id: 42, title: "第一辆车很容易 (病毒视频)", category: "TVC与宣言", client: "DNAF 东风日产汽车金融", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378255741_IMG_00025.jpeg" },
 
       // 主视觉与海报
-      { id: 18, title: "百威世界杯", category: "主视觉与海报", client: "百威啤酒", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131815884_IMG_00028.jpeg" },
-      { id: 19, title: "Mustang 虎虎生威", category: "主视觉与海报", client: "Ford 福特", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131812573_IMG_00029.jpeg" },
-      { id: 20, title: "新风至·轻云享", category: "主视觉与海报", client: "PHILIPS 飞利浦空调", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131813883_IMG_00030.jpeg" },
-      { id: 21, title: "猛禽计划", category: "主视觉与海报", client: "Shanghai Sπ", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131827110_IMG_00043.jpeg" },
-      { id: 22, title: "惠而浦知道：真·一键启动", category: "主视觉与海报", client: "Whirlpool 惠而浦", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131821619_IMG_00042.jpeg" },
-      { id: 23, title: "浓醇到说不出口 与你分享", category: "主视觉与海报", client: "HERSHEY'S 好时", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131813819_IMG_00034.jpeg" },
-      { id: 24, title: "浓醇时光 与你分享", category: "主视觉与海报", client: "HERSHEY'S 好时", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131830236_IMG_00049.jpeg" },
-      { id: 25, title: "优雅转身", category: "主视觉与海报", client: "AVON", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131918442_IMG_00032.jpeg" },
-      { id: 26, title: "法式护肤 鎏金肌密", category: "主视觉与海报", client: "NUXE 巴黎欧树", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131813342_IMG_00031.jpeg" },
-      { id: 27, title: "离不开的清甜", category: "主视觉与海报", client: "KAGOME 可果美", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131818541_IMG_00033.jpeg" },
-      { id: 28, title: "为你的健康加菜", category: "主视觉与海报", client: "KAGOME 可果美", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131869815_IMG_00041.jpeg" },
-      { id: 29, title: "为自己打气 (气泡+维生素)", category: "主视觉与海报", client: "Uni-President 统一企业", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131869942_IMG_00036.jpeg" },
-      { id: 30, title: "扫清过敏障碍", category: "主视觉与海报", client: "Clarityne 开瑞坦", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131814620_IMG_00037.jpeg" },
-      { id: 31, title: "挑战缺养时刻", category: "主视觉与海报", client: "Centrum 善存", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131816652_IMG_00038.jpeg" },
-      { id: 32, title: "安心喝享健康", category: "主视觉与海报", client: "Ganten 优悦", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131826450_IMG_00039.jpeg" },
-      { id: 33, title: "上海雙妹 (Topawards Asia 2016)", category: "主视觉与海报", client: "SHANGHAI VIVE 雙妹", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131868996_IMG_00040.jpeg" },
-      { id: 34, title: "龙卷魔力 高能洁净 (Magic M85)", category: "主视觉与海报", client: "LEXY 莱克", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131825931_IMG_00044.jpeg" },
-      { id: 35, title: "英菲尼迪 QX90 新生上市 (破界而生)Poster", category: "主视觉与海报", client: "INFINITI", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131824563_IMG_00046.jpeg" },
-
-      // UIUX
-      { id: 36, title: "百威答案之瓶", category: "UIUX", client: "INFINITI (东风日产金融)", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131829910_IMG_00048.jpeg" },
-      { id: 37, title: "好时浓醇剧场", category: "UIUX", client: "HERSHEY'S 好时", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131830236_IMG_00049.jpeg" },
-      { id: 38, title: "英菲尼迪 QX90 新生上市 (破界而生)", category: "UIUX", client: "百威", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131835301_IMG_00047.jpeg" },
-      { id: 39, title: "圣诞与你同在", category: "UIUX", client: "HERSHEY'S 好时", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131836345_IMG_00050.jpeg" },
-
-      // AIGC作品
-      { id: 40, title: "洛奇的密室：AIGC实战自媒体案例", category: "AIGC作品", client: "自持项目 (B站/YouTube/小红书)", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131837188_IMG_00052.jpeg" },
-      { id: 41, title: "Santal 33 丛林秘境", category: "AIGC作品", client: "Le Labo", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131838282_IMG_00054.jpeg" },
-      { id: 42, title: "Anker Prime 极客能量", category: "AIGC作品", client: "Anker 安克", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131886811_IMG_00057.jpeg" },
-      { id: 43, title: "巨无霸", category: "AIGC作品", client: "McDonald's 麦当劳", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131837399_IMG_00058.jpeg" },
-      { id: 44, title: "Forever Chuck 红色派对", category: "AIGC作品", client: "Converse 匡威", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131843043_IMG_00059.jpeg" },
-      { id: 45, title: "麦当劳时尚重构 (MCD Fashion)", category: "AIGC作品", client: "McDonald's 麦当劳", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131845063_IMG_00060.jpeg" },
-      { id: 46, title: "跨界潮流服饰概念", category: "AIGC作品", client: "Budweiser / BYD / Google", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131847470_IMG_00061.jpeg" },
-      { id: 47, title: "九号平衡车未来工业", category: "AIGC作品", client: "Ninebot 九号公司", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131843452_IMG_00062.jpeg" },
-      { id: 48, title: "小米 SU7 疾速美学", category: "AIGC作品", client: "Xiaomi 小米", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131842251_IMG_00063.jpeg" },
-      { id: 49, title: "非凡大师：Ultimate Design", category: "AIGC作品", client: "Huawei 华为", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131885653_IMG_00064.jpeg" },
-      { id: 50, title: "2026 蛇年新春视觉", category: "AIGC作品", client: "新春创意实验", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131847356_IMG_00065.jpeg" },
-      { id: 51, title: "奇幻艺术系列", category: "AIGC作品", client: "Loki Jie 个人实验", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131887676_IMG_00066.jpeg" },
+      { id: 43, title: "百威世界杯", category: "主视觉与海报", client: "百威啤酒", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378288202_IMG_00028.jpeg" },
+      { id: 44, title: "Mustang 虎虎生威", category: "主视觉与海报", client: "Ford 福特", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378294072_IMG_00029.jpeg" },
+      { id: 45, title: "新风至·轻云享", category: "主视觉与海报", client: "PHILIPS 飞利浦空调", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378291354_IMG_00030.jpeg" },
+      { id: 46, title: "猛禽计划", category: "主视觉与海报", client: "Shanghai Sπ", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378289467_IMG_00043.jpeg" },
+      { id: 47, title: "惠而浦知道：真·一键启动", category: "主视觉与海报", client: "Whirlpool 惠而浦", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378311956_IMG_00042.jpeg" },
+      { id: 48, title: "浓醇时光 与你分享", category: "主视觉与海报", client: "HERSHEY'S 好时", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378289941_IMG_00034.jpeg" },
+      { id: 49, title: "优雅转身", category: "主视觉与海报", client: "AVON", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378275827_IMG_00024.jpeg" },
+      { id: 50, title: "法式护肤 鎏金肌密", category: "主视觉与海报", client: "NUXE 巴黎欧树", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378294140_IMG_00031.jpeg" },
+      { id: 51, title: "离不开的清甜", category: "主视觉与海报", client: "KAGOME 可果美", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378295115_IMG_00033.jpeg" },
+      { id: 52, title: "为你的健康加菜", category: "主视觉与海报", client: "KAGOME 可果美", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378297102_IMG_00041.jpeg" },
+      { id: 53, title: "为自己打气 (气泡+维生素)", category: "主视觉与海报", client: "Uni-President 统一企业", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378287445_IMG_00036.jpeg" },
+      { id: 54, title: "扫清过敏障碍", category: "主视觉与海报", client: "Clarityne 开瑞坦", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378300763_IMG_00037.jpeg" },
+      { id: 55, title: "挑战缺养时刻", category: "主视觉与海报", client: "Centrum 善存", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378290305_IMG_00038.jpeg" },
+      { id: 56, title: "安心喝享健康", category: "主视觉与海报", client: "Ganten 优悦", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378290023_IMG_00039.jpeg" },
+      { id: 57, title: "上海雙妹 (Topawards Asia 2016获奖作品)", category: "主视觉与海报", client: "SHANGHAI VIVE 雙妹", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378290906_IMG_00040.jpeg" },
+      { id: 58, title: "龙卷魔力 高能洁净 (Magic M85)", category: "主视觉与海报", client: "LEXY 莱克", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378308239_IMG_00044.jpeg" },
+      { id: 59, title: "英菲尼迪 QX90 新生上市 (破界而生)Poster", category: "主视觉与海报", client: "INFINITI (东风日产金融)", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378325698_IMG_00046.jpeg" },
 
       // 包装设计
-      { id: 52, title: "Starry Starry Box (太空创想礼盒)", category: "包装设计", client: "YUESAI 羽西", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131850666_IMG_00068.jpeg" },
-      { id: 53, title: "REJUVENATE CORDYCEPS Box (时尚礼盒)", category: "包装设计", client: "YUESAI 羽西", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131859190_IMG_00078.jpeg" },
-      { id: 54, title: "生命之书 (LIFE GIFT BOOK)", category: "包装设计", client: "Boston Scientific 波士顿科学", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131850231_IMG_00069.jpeg" },
-      { id: 55, title: "Very Rose 礼盒", category: "包装设计", client: "NUXE", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131846423_IMG_00070.jpeg" },
-      { id: 56, title: "Beauty Clinic 展示设计", category: "包装设计", client: "Avène 雅漾", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773141150221_Gemini_Generated_Image_ep9pm8ep9pm8ep9p_upscayl_2x_ultrasharp.jpg" },
-      { id: 57, title: "颂春丰 礼盒", category: "包装设计", client: "中茶", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773141169081_Gemini_Generated_Image_b0abuub0abuub0ab_upscayl_2x_ultrasharp.jpg" },
-      { id: 58, title: "沙琪玛礼盒 (美味值千金)", category: "包装设计", client: "Hsu Fu Chi 徐記", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773141146901_Gemini_Generated_Image_7c7jra7c7jra7c7j_upscayl_2x_ultrasharp.jpg" },
-      { id: 59, title: "2025 Snake Year (蛇年限定)", category: "包装设计", client: "KitKat", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773141186280_Gemini_Generated_Image_y8cpooy8cpooy8cp_upscayl_2x_ultrasharp.jpg" },
+      { id: 60, title: "Starry Starry Box (太空创想礼盒)", category: "包装设计", client: "YUESAI 羽西", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378327924_IMG_00068.jpeg" },
+      { id: 61, title: "REJUVENATE CORDYCEPS Box (时尚礼盒)", category: "包装设计", client: "YUESAI 羽西", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378401447_IMG_00078.jpeg" },
+      { id: 62, title: "生命之书 (LIFE GIFT BOOK)", category: "包装设计", client: "Boston Scientific 波士顿科学", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378327639_IMG_00069.jpeg" },
+      { id: 63, title: "Very Rose 礼盒", category: "包装设计", client: "NUXE", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378357436_IMG_00070.jpeg" },
+      { id: 64, title: "Beauty Clinic 展示设计", category: "包装设计", client: "Avène 雅漾", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378393924_IMG_00072.jpeg" },
+      { id: 65, title: "颂春丰 礼盒", category: "包装设计", client: "中茶", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378396067_IMG_00074.jpeg" },
+      { id: 66, title: "沙琪玛礼盒 (美味值千金)", category: "包装设计", client: "Hsu Fu Chi 徐記", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378400096_IMG_00082.jpeg" },
+      { id: 67, title: "2025 Snake Year (蛇年限定)", category: "包装设计", client: "KitKat", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378419140_IMG_00084.jpeg" },
 
       // VI & IP 生动化陈列
-      { id: 60, title: "创新之路 (The Journey to Innovation)", category: "VI & IP 生动化陈列", client: "HSBC 汇丰银行", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131864073_IMG_00088.jpeg" },
-      { id: 61, title: "梦想领航员：阿东 & 阿金", category: "VI & IP 生动化陈列", client: "DNAF 东风日产汽车金融", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131864379_IMG_00089.jpeg" },
-      { id: 62, title: "暖萌来袭 (Line Friends 合作款)", category: "VI & IP 生动化陈列", client: "Lipton 立顿", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131867018_IMG_00090.jpeg" },
-      { id: 63, title: "轻养每一刻 (蜂蜜柚子)", category: "VI & IP 生动化陈列", client: "Master Kong 康师傅", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131861597_IMG_00091.jpeg" },
-      { id: 64, title: "电影联合推广 IP 手机设计", category: "VI & IP 生动化陈列", client: "vivo", image: "https://d91c6bdb.cloudflare-imgbed-90g.pages.dev/file/img/1773131904243_IMG_00094.jpeg" },
+      { id: 68, title: "创新之路 (The Journey to Innovation)", category: "VI & IP 生动化陈列", client: "HSBC 汇丰银行", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378422404_IMG_00088.jpeg" },
+      { id: 69, title: "梦想领航员：阿东 & 阿金", category: "VI & IP 生动化陈列", client: "DNAF 东风日产汽车金融", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378399637_IMG_00089.jpeg" },
+      { id: 70, title: "暖萌来袭 (Line Friends 合作款)", category: "VI & IP 生动化陈列", client: "Lipton 立顿", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378422456_IMG_00090.jpeg" },
+      { id: 71, title: "轻养每一刻 (蜂蜜柚子)", category: "VI & IP 生动化陈列", client: "Master Kong 康师傅", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378406429_IMG_00091.jpeg" },
+      { id: 72, title: "电影联合推广 IP 手机设计 (格林德沃之罪/大黄蜂/蜘蛛侠)", category: "VI & IP 生动化陈列", client: "vivo", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773378466676_IMG_00094.jpeg" },
+      { id: 73, title: "孩子的宝物展", category: "VI & IP 生动化陈列", client: "中国电信", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773740561152_Page15.jpg" },
+      { id: 74, title: "上学之路", category: "VI & IP 生动化陈列", client: "中国电信", image: "https://cloudflare-imgbed-90g.pages.dev/file/img/1773740562293_Page16.jpg" },
     ];
 
     // --- 核心 Hook：Lenis 丝滑滚动 ---
@@ -451,7 +460,7 @@
             <nav className="fixed top-0 w-full p-6 md:px-12 md:py-10 flex justify-between items-center z-50 mix-blend-difference text-white">
               <div className="text-xl font-serif italic tracking-wide">Loki Wang.</div>
               <div className="flex items-center gap-8">
-                <div className="text-xs font-sans tracking-[0.2em] uppercase hidden md:block font-light">Creative Director</div>
+                <div className="text-xs font-sans tracking-[0.2em] uppercase hidden md:block font-light">Brand & HCI Narrative Lead (AI-Driven)</div>
                 <button onClick={() => setIsDarkMode(!isDarkMode)} onMouseEnter={() => onHover("Theme")} onMouseLeave={onLeave} className={`hover:opacity-60 transition-opacity ${!lightboxImage ? 'cursor-none' : ''}`}>
                   {isDarkMode ? <IconSun className="w-5 h-5" /> : <IconMoon className="w-5 h-5" />}
                 </button>
